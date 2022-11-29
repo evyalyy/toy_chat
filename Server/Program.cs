@@ -12,6 +12,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<UserContext>(opt =>
     opt.UseInMemoryDatabase("ToyChat"));
+builder.Services.AddDbContext<MessageContext>(opt =>
+    opt.UseInMemoryDatabase("ToyChat"));
 
 var app = builder.Build();
 
