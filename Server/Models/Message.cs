@@ -8,6 +8,8 @@ public class Message
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public UInt64 Id { get; set; }
-    
+
     public string Content { get; set; }
+
+    public Guid Sender { get; set; }
 }

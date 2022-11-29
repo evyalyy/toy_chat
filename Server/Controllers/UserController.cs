@@ -9,7 +9,7 @@ namespace Server.Controllers;
 public class UserController : ControllerBase
 {
     private readonly ILogger<UserController> _logger;
-    private UserContext _dbContext;
+    private readonly UserContext _dbContext;
 
     public UserController(ILogger<UserController> logger, UserContext dbContext)
     {
