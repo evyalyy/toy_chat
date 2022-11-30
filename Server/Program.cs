@@ -1,5 +1,7 @@
 using Microsoft.Data.Sqlite;
+using Server.Migrations;
 using Server.Models;
+using Server.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,11 @@ var sqliteConnectionString = new SqliteConnectionStringBuilder
 {
     DataSource = "chat.db"
 }.ToString();
+
+var migrationRunner = new MigrationsRunner(sqliteConnectionString);
+migrationRunner.Add(new Initial());
+migrationRunner.Add(new AddSentTs());
+migrationRunner.Up();
 
 builder.Configuration["DbConnectionString"] = sqliteConnectionString;
 
