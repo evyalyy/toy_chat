@@ -11,5 +11,5 @@ public class Message
 
     public string Content { get; set; }
 
-    public Guid Sender { get; set; }
+    public UserUuid UserId { get; set; }
 }

@@ -8,49 +8,40 @@ namespace Server.Controllers;
 [Route("[controller]")]
 public class MessageController : ControllerBase
 {
-    private readonly MessageContext _messageContext;
-    private readonly UserContext _userContext;
+    private readonly ChatDbContext _chatDbContext;
 
-    public MessageController(MessageContext messageContext, UserContext userContext)
+    public MessageController(ChatDbContext chatDbContext)
     {
-        _messageContext = messageContext;
-        _userContext = userContext;
+        _chatDbContext = chatDbContext;
     }
 
     [HttpPost]
     public ActionResult<UInt64> Post(string sender, string content)
     {
-        Guid senderGuid;
+        UserUuid senderUuid;
         try
         {
-            senderGuid = Guid.Parse(sender);
+            senderUuid = new UserUuid(sender);
         }
         catch (Exception err)
         {
             return BadRequest("Bad user id: " + err);
         }
         
-        var user = _userContext.Users.Find(senderGuid);
+        var user = _chatDbContext.Users.Find(senderUuid);
         if (user is null)
         {
-            return NotFound($"User {senderGuid} not found");
+            return NotFound($"User {senderUuid} not found");
         }
 
-        var entityEntry = _messageContext.Messages.Add(new Message { Content = content, Sender = senderGuid });
-        _messageContext.SaveChanges();
+        var entityEntry = _chatDbContext.Messages.Add(new Message { Content = content, UserId = senderUuid });
+        _chatDbContext.SaveChanges();
         return entityEntry.Entity.Id;
     }
 
     [HttpGet]
     public ActionResult<List<Message>> Get(UInt64 lastMessageId = 0)
     {
-        var messages = _messageContext.Messages.Where(m => m.Id > lastMessageId);
-        var outMessages = new List<Message>();
-        foreach (var message in messages)
-        {
-            outMessages.Add(message);
-        }
-
-        return outMessages;
+        return _chatDbContext.Messages.Where(m => m.Id > lastMessageId).ToList();
     }
 }

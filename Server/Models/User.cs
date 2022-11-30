@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Server.Models;
 
 public class User
 {
-    public Guid Id { get; set; }
+    public UserUuid Id { get; set; }
 
     public string PhoneNumber { get; set; }
 

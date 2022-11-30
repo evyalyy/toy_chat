@@ -1,3 +1,4 @@
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Server.Models;
 
@@ -10,10 +11,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<UserContext>(opt =>
-    opt.UseInMemoryDatabase("ToyChat"));
-builder.Services.AddDbContext<MessageContext>(opt =>
-    opt.UseInMemoryDatabase("ToyChat"));
+var sqliteConnectionString = new SqliteConnectionStringBuilder
+{
+    DataSource = "chat.db"
+}.ToString();
+
+builder.Services.AddDbContext<ChatDbContext>(opt =>
+    opt.UseSqlite(sqliteConnectionString));
 
 var app = builder.Build();
 

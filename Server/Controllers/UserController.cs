@@ -9,9 +9,9 @@ namespace Server.Controllers;
 public class UserController : ControllerBase
 {
     private readonly ILogger<UserController> _logger;
-    private readonly UserContext _dbContext;
+    private readonly ChatDbContext _dbContext;
 
-    public UserController(ILogger<UserController> logger, UserContext dbContext)
+    public UserController(ILogger<UserController> logger, ChatDbContext dbContext)
     {
         _logger = logger;
         _dbContext = dbContext;
@@ -21,7 +21,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult<User>> Post(string phoneNumber, string password, string name)
     {
         _logger.LogInformation("Received CreateUser with name {Name}", name);
-        var newUser = new User { Id = Guid.NewGuid(), PhoneNumber = phoneNumber, Name = name, Password = password };
+        var newUser = new User { Id = UserUuid.New(), PhoneNumber = phoneNumber, Name = name, Password = password };
         _dbContext.Users.Add(newUser);
         await _dbContext.SaveChangesAsync();
         return newUser;
@@ -30,7 +30,7 @@ public class UserController : ControllerBase
     [HttpGet]
     public ActionResult<User> Get(string userId)
     {
-        var user = _dbContext.Users.Find(Guid.Parse(userId));
+        var user = _dbContext.Users.Find(new UserUuid(userId));
         if (user is null)
         {
             return NotFound();
