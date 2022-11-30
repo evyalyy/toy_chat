@@ -1,5 +1,4 @@
 using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
 using Server.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,8 +15,10 @@ var sqliteConnectionString = new SqliteConnectionStringBuilder
     DataSource = "chat.db"
 }.ToString();
 
-builder.Services.AddDbContext<ChatDbContext>(opt =>
-    opt.UseSqlite(sqliteConnectionString));
+builder.Configuration["DbConnectionString"] = sqliteConnectionString;
+
+builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+builder.Services.AddScoped<IMessagesRepository, MessagesRepository>();
 
 var app = builder.Build();
 

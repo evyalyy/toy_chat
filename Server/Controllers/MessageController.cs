@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Server.Models;
 
 namespace Server.Controllers;
@@ -8,15 +7,17 @@ namespace Server.Controllers;
 [Route("[controller]")]
 public class MessageController : ControllerBase
 {
-    private readonly ChatDbContext _chatDbContext;
+    private readonly IUsersRepository _users;
+    private readonly IMessagesRepository _messages;
 
-    public MessageController(ChatDbContext chatDbContext)
+    public MessageController(IUsersRepository users, IMessagesRepository messages)
     {
-        _chatDbContext = chatDbContext;
+        _users = users;
+        _messages = messages;
     }
 
     [HttpPost]
-    public ActionResult<UInt64> Post(string sender, string content)
+    public ActionResult<int> Post(string sender, string content)
     {
         UserUuid senderUuid;
         try
@@ -28,20 +29,18 @@ public class MessageController : ControllerBase
             return BadRequest("Bad user id: " + err);
         }
         
-        var user = _chatDbContext.Users.Find(senderUuid);
+        var user = _users.GetUser(senderUuid);
         if (user is null)
         {
             return NotFound($"User {senderUuid} not found");
         }
 
-        var entityEntry = _chatDbContext.Messages.Add(new Message { Content = content, UserId = senderUuid });
-        _chatDbContext.SaveChanges();
-        return entityEntry.Entity.Id;
+        return _messages.AddMessage(senderUuid, content, DateTime.Now);
     }
 
     [HttpGet]
-    public ActionResult<List<Message>> Get(UInt64 lastMessageId = 0)
+    public ActionResult<List<Message>> Get(int lastMessageId = 0)
     {
-        return _chatDbContext.Messages.Where(m => m.Id > lastMessageId).ToList();
+        return _messages.GetMessages(lastMessageId);
     }
 }

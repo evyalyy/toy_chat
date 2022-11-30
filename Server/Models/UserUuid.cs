@@ -22,6 +22,11 @@ public class UserUuid
         return new UserUuid(Guid.NewGuid());
     }
 
+    public static UserUuid Empty()
+    {
+        return new UserUuid(Guid.Empty);
+    }
+
     public override string ToString()
     {
         return Id.ToString();

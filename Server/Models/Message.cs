@@ -7,7 +7,7 @@ public class Message
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public UInt64 Id { get; set; }
+    public int Id { get; set; }
 
     public string Content { get; set; }
 
