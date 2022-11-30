@@ -57,14 +57,13 @@ public class MigrationsRunner
             return;
         }
         Console.WriteLine($"Applying migration {name}");
-        var ts = ((DateTimeOffset)DateTime.Now).ToUnixTimeSeconds();
         new SqliteCommand(migration.UpCommand(), conn).ExecuteNonQuery();
         const string recordMigration = @"
             INSERT INTO _migrations (Id, AppliedAt) VALUES ($id, $ts);
         ";
         using var command = new SqliteCommand(recordMigration, conn);
         command.Parameters.Add(new SqliteParameter("id", name));
-        command.Parameters.Add(new SqliteParameter("ts", ts));
+        command.Parameters.Add(new SqliteParameter("ts", DateTime.Now.ToUnixTime()));
         command.ExecuteNonQuery();
     }
 

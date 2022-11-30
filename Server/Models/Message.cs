@@ -12,4 +12,6 @@ public class Message
     public string Content { get; set; }
 
     public UserUuid UserId { get; set; }
+    
+    public DateTime SentTs { get; set; }
 }
