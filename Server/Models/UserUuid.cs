@@ -1,8 +1,5 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace Server.Models;
 
-[Owned]
 public class UserUuid
 {
     public Guid Id { get; set; }
