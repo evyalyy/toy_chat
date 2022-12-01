@@ -19,16 +19,8 @@ public class MessageController : ControllerBase
     [HttpPost]
     public ActionResult<int> Post(string channelId, string sender, string content)
     {
-        UserUuid senderUuid;
-        try
-        {
-            senderUuid = new UserUuid(sender);
-        }
-        catch (Exception err)
-        {
-            return BadRequest("Bad user id: " + err);
-        }
-        
+        var senderUuid = new UserUuid(sender);
+
         var user = _users.GetUser(senderUuid);
         if (user is null)
         {

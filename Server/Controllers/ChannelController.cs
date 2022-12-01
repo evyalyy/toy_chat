@@ -7,12 +7,10 @@ namespace Server.Controllers;
 [Route("[controller]")]
 public class ChannelController : ControllerBase
 {
-    private readonly IUsersRepository _users;
     private readonly IChannelsRepository _channels;
 
-    public ChannelController(IUsersRepository users, IChannelsRepository channels)
+    public ChannelController(IChannelsRepository channels)
     {
-        _users = users;
         _channels = channels;
     }
 

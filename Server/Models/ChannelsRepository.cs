@@ -88,7 +88,6 @@ public class ChannelsRepository : IChannelsRepository
 
         const string query = "SELECT Id, LastMessageId, LastMessageTs FROM Channels WHERE Id = @id LIMIT 1";
         using var command = new SqliteCommand(query, conn);
-        var chStr = channelId.ToString();
         command.Parameters.Add(new SqliteParameter("id", channelId.ToString()));
         using var reader = command.ExecuteReader();
         if (!reader.Read())
