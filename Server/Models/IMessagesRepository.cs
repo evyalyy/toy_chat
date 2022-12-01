@@ -2,7 +2,7 @@ namespace Server.Models;
 
 public interface IMessagesRepository
 {
-    int AddMessage(UserUuid senderId, string content, DateTime timestamp);
+    int AddMessage(ChannelId channel, UserUuid senderId, string content, DateTime timestamp);
 
-    List<Message> GetMessages(int fromId);
+    List<Message> GetMessages(ChannelId channel, int fromId);
 }

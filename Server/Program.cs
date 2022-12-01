@@ -20,12 +20,16 @@ var sqliteConnectionString = new SqliteConnectionStringBuilder
 var migrationRunner = new MigrationsRunner(sqliteConnectionString);
 migrationRunner.Add(new Initial());
 migrationRunner.Add(new AddSentTs());
+migrationRunner.Add(new AddChannels());
+migrationRunner.Add(new AddPrivateChannels());
+migrationRunner.Add(new AddChannelIdToMessage());
 migrationRunner.Up();
 
 builder.Configuration["DbConnectionString"] = sqliteConnectionString;
 
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IMessagesRepository, MessagesRepository>();
+builder.Services.AddScoped<IChannelsRepository, ChannelsRepository>();
 
 var app = builder.Build();
 

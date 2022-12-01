@@ -8,16 +8,16 @@ namespace Server.Controllers;
 public class MessageController : ControllerBase
 {
     private readonly IUsersRepository _users;
-    private readonly IMessagesRepository _messages;
+    private readonly IChannelsRepository _channels;
 
-    public MessageController(IUsersRepository users, IMessagesRepository messages)
+    public MessageController(IUsersRepository users, IChannelsRepository channels)
     {
         _users = users;
-        _messages = messages;
+        _channels = channels;
     }
 
     [HttpPost]
-    public ActionResult<int> Post(string sender, string content)
+    public ActionResult<int> Post(string channelId, string sender, string content)
     {
         UserUuid senderUuid;
         try
@@ -34,13 +34,25 @@ public class MessageController : ControllerBase
         {
             return NotFound($"User {senderUuid} not found");
         }
+        
+        var channel = _channels.GetChannel(new ChannelId(channelId));
 
-        return _messages.AddMessage(senderUuid, content, DateTime.Now);
+        if (channel is null)
+        {
+            return NotFound($"Channel {channelId} not found");
+        }
+
+        return channel.SendMessage(senderUuid, content);
     }
 
     [HttpGet]
-    public ActionResult<List<Message>> Get(int lastMessageId = 0)
+    public ActionResult<List<Message>> Get(string channelId, int lastMessageId = 0)
     {
-        return _messages.GetMessages(lastMessageId);
+        var channel = _channels.GetChannel(new ChannelId(channelId));
+        if (channel is null)
+        {
+            return NotFound($"Channel {channelId} not found");
+        }
+        return channel.GetMessages(lastMessageId);
     }
 }
