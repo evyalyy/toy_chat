@@ -23,6 +23,7 @@ migrationRunner.Add(new AddSentTs());
 migrationRunner.Add(new AddChannels());
 migrationRunner.Add(new AddPrivateChannels());
 migrationRunner.Add(new AddChannelIdToMessage());
+migrationRunner.Add(new AddGroups());
 migrationRunner.Up();
 
 builder.Configuration["DbConnectionString"] = sqliteConnectionString;
@@ -31,6 +32,7 @@ builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IMessagesRepository, MessagesRepository>();
 builder.Services.AddScoped<IChannelsRepository, ChannelsRepository>();
 builder.Services.AddScoped<IPrivateChannelsRepository, PrivateChannelsRepository>();
+builder.Services.AddScoped<IGroupsRepository, GroupsRepository>();
 
 var app = builder.Build();
 
