@@ -20,10 +20,8 @@ public class UserController : ControllerBase
     public ActionResult<UserUuid> Post(string phoneNumber, string password, string name)
     {
         _logger.LogInformation("Received CreateUser with name {Name}", name);
-        var id = UserUuid.New();
 
-        var outId = _users.AddUser(id, phoneNumber, password, name);
-        return outId;
+        return _users.AddUser(phoneNumber, password, name);
     }
 
     [HttpGet]

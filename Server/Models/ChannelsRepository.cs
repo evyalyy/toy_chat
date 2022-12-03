@@ -20,7 +20,7 @@ public class ChannelsRepository : IChannelsRepository
         conn.Open();
 
         var channelId = ChannelId.New();
-        
+
         var query = "INSERT INTO Channels (Id) VALUES (@id)";
         using var command = new SqliteCommand(query, conn);
         command.Parameters.Add(new SqliteParameter("id", channelId.ToString()));
@@ -36,16 +36,25 @@ public class ChannelsRepository : IChannelsRepository
         {
             throw new Exception($"WTF? Cannot select created channel {channelId}");
         }
+
         return channel;
+    }
+
+    private static (UserUuid, UserUuid) _sortUserIds(UserUuid userId1, UserUuid userId2)
+    {
+        return userId1.Id.CompareTo(userId2.Id) > 0 ? (userId2, userId1) : (userId1, userId2);
     }
 
     public Channel AddPrivateChannel(UserUuid userId1, UserUuid userId2)
     {
         var newChannel = AddChannel();
+
+        (userId1, userId2) = _sortUserIds(userId1, userId2);
+
         using var conn = new SqliteConnection(_connectionString);
         conn.Open();
 
-        var query = @"
+        const string query = @"
             INSERT INTO PrivateChannels (UserId1, UserId2, ChannelId)
             VALUES (@userId1, @userId2, @channelId)";
         using var command = new SqliteCommand(query, conn);
@@ -103,15 +112,11 @@ public class ChannelsRepository : IChannelsRepository
             reader.GetInt32(reader.GetOrdinal("LastMessageId")),
             reader.GetInt64(reader.GetOrdinal("LastMessageTs")).FromUnixTime()
         );
-
     }
 
     public Channel? GetPrivateChannel(UserUuid userId1, UserUuid userId2)
     {
-        if (userId1.Id.CompareTo(userId2.Id) > 0)
-        {
-            (userId1, userId2) = (userId2, userId1);
-        }
+        (userId1, userId2) = _sortUserIds(userId1, userId2);
         using var conn = new SqliteConnection(_connectionString);
         conn.Open();
 

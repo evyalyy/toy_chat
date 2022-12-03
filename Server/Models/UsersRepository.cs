@@ -11,8 +11,9 @@ public class UsersRepository : IUsersRepository
         _connectionString = configuration["DbConnectionString"];
     }
 
-    public UserUuid AddUser(UserUuid id, string phoneNumber, string password, string name)
+    public UserUuid AddUser(string phoneNumber, string password, string name)
     {
+        var userId = UserUuid.New();
         using var conn = new SqliteConnection(_connectionString);
         conn.Open();
 
@@ -20,7 +21,7 @@ public class UsersRepository : IUsersRepository
                     "VALUES (@id, @phone, @name, @password)" +
                     "RETURNING Id";
         using var command = new SqliteCommand(query, conn);
-        command.Parameters.Add(new SqliteParameter("id", id.ToString()));
+        command.Parameters.Add(new SqliteParameter("id", userId.ToString()));
         command.Parameters.Add(new SqliteParameter("phone", phoneNumber));
         command.Parameters.Add(new SqliteParameter("name", name));
         command.Parameters.Add(new SqliteParameter("password", password));
