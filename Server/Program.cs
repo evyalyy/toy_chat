@@ -30,6 +30,7 @@ builder.Configuration["DbConnectionString"] = sqliteConnectionString;
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IMessagesRepository, MessagesRepository>();
 builder.Services.AddScoped<IChannelsRepository, ChannelsRepository>();
+builder.Services.AddScoped<IPrivateChannelsRepository, PrivateChannelsRepository>();
 
 var app = builder.Build();
 

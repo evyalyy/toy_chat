@@ -40,36 +40,6 @@ public class ChannelsRepository : IChannelsRepository
         return channel;
     }
 
-    private static (UserUuid, UserUuid) _sortUserIds(UserUuid userId1, UserUuid userId2)
-    {
-        return userId1.Id.CompareTo(userId2.Id) > 0 ? (userId2, userId1) : (userId1, userId2);
-    }
-
-    public Channel AddPrivateChannel(UserUuid userId1, UserUuid userId2)
-    {
-        var newChannel = AddChannel();
-
-        (userId1, userId2) = _sortUserIds(userId1, userId2);
-
-        using var conn = new SqliteConnection(_connectionString);
-        conn.Open();
-
-        const string query = @"
-            INSERT INTO PrivateChannels (UserId1, UserId2, ChannelId)
-            VALUES (@userId1, @userId2, @channelId)";
-        using var command = new SqliteCommand(query, conn);
-        command.Parameters.Add(new SqliteParameter("userId1", userId1.ToString()));
-        command.Parameters.Add(new SqliteParameter("userId2", userId2.ToString()));
-        command.Parameters.Add(new SqliteParameter("channelId", newChannel.Id.ToString()));
-        var numRowsAffected = command.ExecuteNonQuery();
-        if (numRowsAffected != 1)
-        {
-            throw new Exception("Cannot insert private channel");
-        }
-
-        return newChannel;
-    }
-
     public void UpdateChannel(ChannelId channelId, int lastMessageId, DateTime lastMessageTs)
     {
         using var conn = new SqliteConnection(_connectionString);
@@ -112,26 +82,5 @@ public class ChannelsRepository : IChannelsRepository
             reader.GetInt32(reader.GetOrdinal("LastMessageId")),
             reader.GetInt64(reader.GetOrdinal("LastMessageTs")).FromUnixTime()
         );
-    }
-
-    public Channel? GetPrivateChannel(UserUuid userId1, UserUuid userId2)
-    {
-        (userId1, userId2) = _sortUserIds(userId1, userId2);
-        using var conn = new SqliteConnection(_connectionString);
-        conn.Open();
-
-        const string query = "SELECT ChannelId FROM PrivateChannels WHERE UserId1 = @id1 AND UserId2 = @id2";
-        using var command = new SqliteCommand(query, conn);
-        command.Parameters.Add(new SqliteParameter("id1", userId1.ToString()));
-        command.Parameters.Add(new SqliteParameter("id2", userId2.ToString()));
-        using var reader = command.ExecuteReader();
-        if (!reader.Read())
-        {
-            return null;
-        }
-
-        var channelId = new ChannelId((string)reader["ChannelId"]);
-
-        return GetChannel(channelId);
     }
 }

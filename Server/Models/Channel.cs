@@ -31,9 +31,9 @@ public class Channel
 
     private readonly IMessagesRepository _messages;
     private readonly IChannelsRepository _channels;
-    public ChannelId Id { get; set; }
+    public ChannelId Id { get; }
 
-    private int LastMessageId { get; set; }
+    public int LastMessageId { get; private set; }
 
-    private DateTime LastMessageTs { get; set; }
+    public DateTime LastMessageTs { get; private set; }
 }

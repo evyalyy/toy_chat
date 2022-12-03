@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Server.Models;
+using Server.Protocol;
 
 namespace Server.Controllers;
 
@@ -7,21 +8,25 @@ namespace Server.Controllers;
 [Route("[controller]")]
 public class ChannelController : ControllerBase
 {
-    private readonly IChannelsRepository _channels;
+    private readonly IPrivateChannelsRepository _channels;
 
-    public ChannelController(IChannelsRepository channels)
+    public ChannelController(IPrivateChannelsRepository channels)
     {
         _channels = channels;
     }
 
-    [HttpPost]
-    public ActionResult<Channel> PrivateChannel(string id1, string id2)
+    [HttpGet("MyPrivateChannels")]
+    public ActionResult<List<ChannelClient>> MyPrivateChannels(string userIdStr)
     {
-        var userId1 = new UserUuid(id1);
-        var userId2 = new UserUuid(id2);
+        var userId = new UserUuid(userIdStr);
+        var channels = _channels.GetPrivateChannels(userId);
 
-        var channel = _channels.AddPrivateChannel(userId1, userId2);
-
-        return channel;
+        return channels.Select(
+            channel => new ChannelClient
+            {
+                Id = channel.Id,
+                LastMessageId = channel.LastMessageId,
+                LastMessageTs = channel.LastMessageTs
+            }).ToList();
     }
 }
