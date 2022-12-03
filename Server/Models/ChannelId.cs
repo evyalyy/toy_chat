@@ -19,11 +19,6 @@ public class ChannelId
         return new ChannelId(Guid.NewGuid());
     }
 
-    public static ChannelId Empty()
-    {
-        return new ChannelId(Guid.Empty);
-    }
-
     public override string ToString()
     {
         return Id.ToString();

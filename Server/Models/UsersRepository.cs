@@ -17,17 +17,21 @@ public class UsersRepository : IUsersRepository
         using var conn = new SqliteConnection(_connectionString);
         conn.Open();
 
-        var query = "INSERT INTO Users (Id,PhoneNumber,Name,Password)" +
-                    "VALUES (@id, @phone, @name, @password)" +
-                    "RETURNING Id";
+        const string query = @"
+            INSERT INTO Users (Id,PhoneNumber,Name,Password)
+            VALUES (@id, @phone, @name, @password)";
         using var command = new SqliteCommand(query, conn);
         command.Parameters.Add(new SqliteParameter("id", userId.ToString()));
         command.Parameters.Add(new SqliteParameter("phone", phoneNumber));
         command.Parameters.Add(new SqliteParameter("name", name));
         command.Parameters.Add(new SqliteParameter("password", password));
-        var output = command.ExecuteScalar();
-        Console.WriteLine($"Output: {output}");
-        return output is not null ? new UserUuid((string)output) : UserUuid.Empty();
+        var numRowsAffected = command.ExecuteNonQuery();
+        if (numRowsAffected != 1)
+        {
+            throw new Exception($"Cannot add new user with id {userId}");
+        }
+
+        return userId;
     }
 
     public User? GetUser(UserUuid id)
