@@ -16,30 +16,26 @@ public class GroupsRepository : IGroupsRepository
 
     public Group AddGroup(string name, string description)
     {
-        var groupId = GroupId.New();
-        if (GetGroup(groupId) is not null)
-        {
-            throw new Exception($"Duplicate group id {groupId}");
-        }
-
         var channel = _channels.AddChannel();
 
         using var conn = new SqliteConnection(_connectionString);
         conn.Open();
 
         const string query = @"
-            INSERT INTO Groups (Id, Name, Description, ChannelId)
-            VALUES (@id, @name, @description, @channelId)";
+            INSERT INTO Groups (Name, Description, ChannelId)
+            VALUES (@name, @description, @channelId)
+            RETURNING Id";
         using var command = new SqliteCommand(query, conn);
-        command.Parameters.Add(new SqliteParameter("id", groupId.ToString()));
         command.Parameters.Add(new SqliteParameter("name", name));
         command.Parameters.Add(new SqliteParameter("description", description));
         command.Parameters.Add(new SqliteParameter("channelId", channel.Id.ToString()));
-        var numRowsAffected = command.ExecuteNonQuery();
-        if (numRowsAffected != 1)
+        var reader = command.ExecuteReader();
+        if (!reader.Read())
         {
-            throw new Exception($"Cannot create group {groupId}");
+            throw new Exception("Cannot create group");
         }
+
+        var groupId = (long)reader["Id"];
 
         return new Group(
             _channels,
@@ -50,7 +46,7 @@ public class GroupsRepository : IGroupsRepository
             channel.Id);
     }
 
-    public Group? GetGroup(GroupId groupId)
+    public Group? GetGroup(long groupId)
     {
         using var conn = new SqliteConnection(_connectionString);
         conn.Open();
@@ -59,7 +55,7 @@ public class GroupsRepository : IGroupsRepository
             SELECT Id, Name, Description, ChannelId FROM Groups
             WHERE Id = @id";
         using var command = new SqliteCommand(query, conn);
-        command.Parameters.Add(new SqliteParameter("id", groupId.ToString()));
+        command.Parameters.Add(new SqliteParameter("id", groupId));
         var reader = command.ExecuteReader();
         if (!reader.Read())
         {
@@ -75,12 +71,13 @@ public class GroupsRepository : IGroupsRepository
             (long)reader["ChannelId"]);
     }
 
-    public void AddMember(GroupId groupId, long userId)
+    public void AddMember(long groupId, long userId)
     {
         if (IsUserInGroup(groupId, userId))
         {
             return;
         }
+
         using var conn = new SqliteConnection(_connectionString);
         conn.Open();
 
@@ -98,7 +95,7 @@ public class GroupsRepository : IGroupsRepository
         }
     }
 
-    public bool IsUserInGroup(GroupId groupId, long userId)
+    public bool IsUserInGroup(long groupId, long userId)
     {
         using var conn = new SqliteConnection(_connectionString);
         conn.Open();
@@ -107,7 +104,7 @@ public class GroupsRepository : IGroupsRepository
             SELECT 1 FROM GroupMembers
             WHERE GroupId = @groupId AND UserId = @userId";
         using var command = new SqliteCommand(query, conn);
-        command.Parameters.Add(new SqliteParameter("groupId", groupId.ToString()));
+        command.Parameters.Add(new SqliteParameter("groupId", groupId));
         command.Parameters.Add(new SqliteParameter("userId", userId));
 
         var reader = command.ExecuteReader();
@@ -115,7 +112,7 @@ public class GroupsRepository : IGroupsRepository
         return reader.Read();
     }
 
-    public List<GroupMemberInfo> GetMembers(GroupId groupId)
+    public List<GroupMemberInfo> GetMembers(long groupId)
     {
         using var conn = new SqliteConnection(_connectionString);
         conn.Open();
@@ -124,7 +121,7 @@ public class GroupsRepository : IGroupsRepository
             SELECT UserId FROM GroupMembers
             WHERE GroupId = @groupId";
         using var command = new SqliteCommand(query, conn);
-        command.Parameters.Add(new SqliteParameter("groupId", groupId.ToString()));
+        command.Parameters.Add(new SqliteParameter("groupId", groupId));
 
         var reader = command.ExecuteReader();
 

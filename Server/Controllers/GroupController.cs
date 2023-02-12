@@ -20,10 +20,8 @@ public class GroupController : ControllerBase
     }
 
     [HttpPost("PostGroupMessage")]
-    public ActionResult<SentMessageClient> PostGroupMessage(string groupIdStr, long senderUserId, string content)
+    public ActionResult<SentMessageClient> PostGroupMessage(long groupId, long senderUserId, string content)
     {
-        var groupId = new GroupId(groupIdStr);
-
         var user = _users.GetUser(senderUserId);
         if (user is null)
         {
@@ -48,10 +46,8 @@ public class GroupController : ControllerBase
     }
 
     [HttpPost("AddMember")]
-    public ActionResult AddMember(string groupIdStr, long userId)
+    public ActionResult AddMember(long groupId, long userId)
     {
-        var groupId = new GroupId(groupIdStr);
-
         var user = _users.GetUser(userId);
         if (user is null)
         {
@@ -77,8 +73,8 @@ public class GroupController : ControllerBase
     }
 
     [HttpGet("GetMembers")]
-    public ActionResult<List<GroupMemberInfo>> GetMembers(string groupIdStr)
+    public ActionResult<List<GroupMemberInfo>> GetMembers(long groupId)
     {
-        return _groups.GetMembers(new GroupId(groupIdStr));
+        return _groups.GetMembers(groupId);
     }
 }

@@ -4,7 +4,7 @@ namespace Server.Models;
 
 public class Group
 {
-    public GroupId Id { get; }
+    public long Id { get; }
     
     public string Name { get; private set; }
     
@@ -19,7 +19,7 @@ public class Group
     public Group(
         IChannelsRepository channels,
         IGroupsRepository groups,
-        GroupId id,
+        long id,
         string name,
         string description,
         long channelId)

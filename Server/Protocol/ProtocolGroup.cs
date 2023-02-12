@@ -4,7 +4,7 @@ namespace Server.Protocol;
 
 public class GroupMemberInfo
 {
-    public GroupId GroupId { get; set; }
+    public long GroupId { get; set; }
 
     public long UserId { get; set; }
 }

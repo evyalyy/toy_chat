@@ -8,7 +8,7 @@ public class AddGroups: IMigration
     {
         return @"
         CREATE TABLE Groups (
-            Id TEXT PRIMARY KEY,
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
             Name TEXT NOT NULL,
             Description TEXT NOT NULL,
             ChannelId INTEGER NOT NULL,
@@ -16,7 +16,7 @@ public class AddGroups: IMigration
         );
 
         CREATE TABLE GroupMembers (
-            GroupId TEXT,
+            GroupId INTEGER,
             UserId INTEGER,
             PRIMARY KEY (GroupId, UserId),
             FOREIGN KEY (GroupId) REFERENCES Groups(Id),

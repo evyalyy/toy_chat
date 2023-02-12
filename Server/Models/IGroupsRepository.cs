@@ -6,12 +6,12 @@ public interface IGroupsRepository
 {
     Group AddGroup(string name, string description);
 
-    Group? GetGroup(GroupId groupId);
+    Group? GetGroup(long groupId);
 
-    void AddMember(GroupId groupId, long userId);
+    void AddMember(long groupId, long userId);
 
-    bool IsUserInGroup(GroupId groupId, long userId);
+    bool IsUserInGroup(long groupId, long userId);
 
-    List<GroupMemberInfo> GetMembers(GroupId groupId);
-    // void RemoveMember(GroupId groupId, UserUuid userId);
+    List<GroupMemberInfo> GetMembers(long groupId);
+    // void RemoveMember(long groupId, UserUuid userId);
 }
