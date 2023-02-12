@@ -10,7 +10,7 @@ public class AddPrivateChannels: IMigration
         CREATE TABLE PrivateChannels (
             UserId1 INTEGER,
             UserId2 INTEGER,
-            ChannelId TEXT,
+            ChannelId INTEGER,
             PRIMARY KEY (UserId1, UserId2),
             FOREIGN KEY (UserId1) REFERENCES Users(Id),
             FOREIGN KEY (UserId2) REFERENCES Users(Id),

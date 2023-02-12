@@ -38,7 +38,7 @@ public class PrivateChannelsRepository : IPrivateChannelsRepository
         using var command = new SqliteCommand(query, conn);
         command.Parameters.Add(new SqliteParameter("userId1", userId1));
         command.Parameters.Add(new SqliteParameter("userId2", userId2));
-        command.Parameters.Add(new SqliteParameter("channelId", newChannel.Id.ToString()));
+        command.Parameters.Add(new SqliteParameter("channelId", newChannel.Id));
         var numRowsAffected = command.ExecuteNonQuery();
         if (numRowsAffected != 1)
         {
@@ -64,7 +64,7 @@ public class PrivateChannelsRepository : IPrivateChannelsRepository
             return null;
         }
 
-        var channelId = new ChannelId((string)reader["ChannelId"]);
+        var channelId = (long)reader["ChannelId"];
 
         return _channels.GetChannel(channelId);
     }
@@ -81,7 +81,7 @@ public class PrivateChannelsRepository : IPrivateChannelsRepository
         using var reader = command.ExecuteReader();
         while (reader.Read())
         {
-            var channelId = new ChannelId((string)reader["ChannelId"]);
+            var channelId = (long)reader["ChannelId"];
             var channel = _channels.GetChannel(channelId);
             if (channel is not null)
             {

@@ -5,7 +5,7 @@ namespace Server.Protocol;
 
 public class ChannelClient
 {
-    public ChannelId Id { get; set; }
+    public long Id { get; set; }
     
     public int LastMessageId { get; set; }
     
@@ -14,7 +14,7 @@ public class ChannelClient
 
 public class SentMessageClient
 {
-    public ChannelId Id { get; set; }
+    public long Id { get; set; }
     
     public int LastMessageId { get; set; }
 }

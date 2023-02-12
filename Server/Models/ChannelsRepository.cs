@@ -19,15 +19,17 @@ public class ChannelsRepository : IChannelsRepository
         using var conn = new SqliteConnection(_connectionString);
         conn.Open();
 
-        var channelId = ChannelId.New();
-
-        var query = "INSERT INTO Channels (Id) VALUES (@id)";
-        using var command = new SqliteCommand(query, conn);
-        command.Parameters.Add(new SqliteParameter("id", channelId.ToString()));
-        var numRowsAffected = command.ExecuteNonQuery();
-        if (numRowsAffected != 1)
+        long channelId = 0;
         {
-            throw new Exception($"Cannot create channel {channelId}");
+            var query = "INSERT INTO Channels DEFAULT VALUES RETURNING Id";
+            using var command = new SqliteCommand(query, conn);
+            using var reader = command.ExecuteReader();
+            if (!reader.Read())
+            {
+                throw new Exception("Cannot create new channel");
+            }
+
+            channelId = (long)reader["Id"];
         }
 
         var channel = GetChannel(channelId);
@@ -40,7 +42,7 @@ public class ChannelsRepository : IChannelsRepository
         return channel;
     }
 
-    public void UpdateChannel(ChannelId channelId, int lastMessageId, DateTime lastMessageTs)
+    public void UpdateChannel(long channelId, int lastMessageId, DateTime lastMessageTs)
     {
         using var conn = new SqliteConnection(_connectionString);
         conn.Open();
@@ -50,7 +52,7 @@ public class ChannelsRepository : IChannelsRepository
             SET LastMessageId = @lastMessageId, LastMessageTs = @lastMessageTs
             WHERE Id = @id";
         using var command = new SqliteCommand(query, conn);
-        command.Parameters.Add(new SqliteParameter("id", channelId.ToString()));
+        command.Parameters.Add(new SqliteParameter("id", channelId));
         command.Parameters.Add(new SqliteParameter("lastMessageId", lastMessageId));
         command.Parameters.Add(new SqliteParameter("lastMessageTs", lastMessageTs.ToUnixTime()));
         var numRowsAffected = command.ExecuteNonQuery();
@@ -60,14 +62,14 @@ public class ChannelsRepository : IChannelsRepository
         }
     }
 
-    public Channel? GetChannel(ChannelId channelId)
+    public Channel? GetChannel(long channelId)
     {
         using var conn = new SqliteConnection(_connectionString);
         conn.Open();
 
         const string query = "SELECT Id, LastMessageId, LastMessageTs FROM Channels WHERE Id = @id LIMIT 1";
         using var command = new SqliteCommand(query, conn);
-        command.Parameters.Add(new SqliteParameter("id", channelId.ToString()));
+        command.Parameters.Add(new SqliteParameter("id", channelId));
         using var reader = command.ExecuteReader();
         if (!reader.Read())
         {
@@ -78,7 +80,7 @@ public class ChannelsRepository : IChannelsRepository
         (
             _messages,
             this,
-            new ChannelId((string)reader["Id"]),
+            (long)reader["Id"],
             reader.GetInt32(reader.GetOrdinal("LastMessageId")),
             reader.GetInt64(reader.GetOrdinal("LastMessageTs")).FromUnixTime()
         );

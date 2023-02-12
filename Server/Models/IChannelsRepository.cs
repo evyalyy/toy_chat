@@ -4,7 +4,7 @@ public interface IChannelsRepository
 {
     Channel AddChannel();
 
-    Channel? GetChannel(ChannelId channelId);
+    Channel? GetChannel(long channelId);
 
-    void UpdateChannel(ChannelId channelId, int lastMessageId, DateTime lastMessageTs);
+    void UpdateChannel(long channelId, int lastMessageId, DateTime lastMessageTs);
 }

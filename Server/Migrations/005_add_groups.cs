@@ -11,7 +11,7 @@ public class AddGroups: IMigration
             Id TEXT PRIMARY KEY,
             Name TEXT NOT NULL,
             Description TEXT NOT NULL,
-            ChannelId TEXT NOT NULL,
+            ChannelId INTEGER NOT NULL,
             FOREIGN KEY (ChannelId) REFERENCES Channels(Id)
         );
 

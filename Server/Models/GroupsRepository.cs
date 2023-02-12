@@ -72,7 +72,7 @@ public class GroupsRepository : IGroupsRepository
             groupId,
             (string)reader["Name"],
             (string)reader["Description"],
-            new ChannelId((string)reader["ChannelId"]));
+            (long)reader["ChannelId"]);
     }
 
     public void AddMember(GroupId groupId, long userId)

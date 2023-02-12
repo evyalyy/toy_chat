@@ -11,7 +11,7 @@ public class MessagesRepository: IMessagesRepository
     {
         _connectionString = configuration["DbConnectionString"];
     }
-    public int AddMessage(ChannelId channel, long senderId, string content, DateTime timestamp)
+    public int AddMessage(long channel, long senderId, string content, DateTime timestamp)
     {
         using var conn = new SqliteConnection(_connectionString);
         conn.Open();
@@ -23,7 +23,7 @@ public class MessagesRepository: IMessagesRepository
         command.Parameters.Add(new SqliteParameter("userId", senderId));
         command.Parameters.Add(new SqliteParameter("content", content));
         command.Parameters.Add(new SqliteParameter("ts", timestamp.ToUnixTime()));
-        command.Parameters.Add(new SqliteParameter("channel", channel.ToString()));
+        command.Parameters.Add(new SqliteParameter("channel", channel));
         var output = command.ExecuteScalar();
         if (output is not null)
         {
@@ -33,7 +33,7 @@ public class MessagesRepository: IMessagesRepository
         throw new Exception("Cannot insert message");
     }
 
-    public List<Message> GetMessages(ChannelId channel, int fromId)
+    public List<Message> GetMessages(long channel, int fromId)
     {
         var messages = new List<Message>();
         using var conn = new SqliteConnection(_connectionString);
@@ -45,7 +45,7 @@ public class MessagesRepository: IMessagesRepository
             WHERE ChannelId = @channel AND Id >= @id";
         using var command = new SqliteCommand(query, conn);
         command.Parameters.Add(new SqliteParameter("id", fromId));
-        command.Parameters.Add(new SqliteParameter("channel", channel.ToString()));
+        command.Parameters.Add(new SqliteParameter("channel", channel));
         using var reader = command.ExecuteReader();
         while (reader.Read())
         {

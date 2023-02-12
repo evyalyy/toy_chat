@@ -4,7 +4,7 @@ public class Message
 {
     public int Id { get; set; }
     
-    public ChannelId Channel { get; set; }
+    public long Channel { get; set; }
 
     public string Content { get; set; }
 

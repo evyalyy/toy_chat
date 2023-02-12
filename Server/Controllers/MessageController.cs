@@ -40,9 +40,9 @@ public class MessageController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<List<Message>> Get(string channelId, int lastMessageId = 0)
+    public ActionResult<List<Message>> Get(long channelId, int lastMessageId = 0)
     {
-        var channel = _channels.GetChannel(new ChannelId(channelId));
+        var channel = _channels.GetChannel(channelId);
         if (channel is null)
         {
             return NotFound($"Channel {channelId} not found");

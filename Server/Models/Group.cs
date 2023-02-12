@@ -10,7 +10,7 @@ public class Group
     
     public string Description { get; private set; }
 
-    private readonly ChannelId _channelId;
+    private readonly long _channelId;
 
     private readonly IChannelsRepository _channels;
 
@@ -22,7 +22,7 @@ public class Group
         GroupId id,
         string name,
         string description,
-        ChannelId channelId)
+        long channelId)
     {
         Id = id;
         Name = name;

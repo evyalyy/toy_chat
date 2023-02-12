@@ -8,7 +8,7 @@ public class AddChannels: IMigration
     {
         return @"
         CREATE TABLE Channels (
-            Id TEXT PRIMARY KEY,
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
             LastMessageId INTEGER NOT NULL DEFAULT 0,
             LastMessageTs INTEGER NOT NULL DEFAULT 0
         );

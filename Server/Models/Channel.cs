@@ -5,7 +5,7 @@ public class Channel
     public Channel(
         IMessagesRepository messages,
         IChannelsRepository channels,
-        ChannelId id, int lastMessageId, DateTime lastMessageTs)
+        long id, int lastMessageId, DateTime lastMessageTs)
     {
         _messages = messages;
         _channels = channels;
@@ -31,7 +31,7 @@ public class Channel
 
     private readonly IMessagesRepository _messages;
     private readonly IChannelsRepository _channels;
-    public ChannelId Id { get; }
+    public long Id { get; }
 
     public int LastMessageId { get; private set; }
 
