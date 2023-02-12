@@ -1,4 +1,5 @@
 using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Server.Migrations;
 using Server.Models;
 using Server.Utils;
@@ -16,15 +17,15 @@ var sqliteConnectionString = new SqliteConnectionStringBuilder
 {
     DataSource = "chat.db"
 }.ToString();
-
-var migrationRunner = new MigrationsRunner(sqliteConnectionString);
-migrationRunner.Add(new Initial());
-migrationRunner.Add(new AddSentTs());
-migrationRunner.Add(new AddChannels());
-migrationRunner.Add(new AddPrivateChannels());
-migrationRunner.Add(new AddChannelIdToMessage());
-migrationRunner.Add(new AddGroups());
-migrationRunner.Up();
+//
+// var migrationRunner = new MigrationsRunner(sqliteConnectionString);
+// migrationRunner.Add(new Initial());
+// migrationRunner.Add(new AddSentTs());
+// migrationRunner.Add(new AddChannels());
+// migrationRunner.Add(new AddPrivateChannels());
+// migrationRunner.Add(new AddChannelIdToMessage());
+// migrationRunner.Add(new AddGroups());
+// migrationRunner.Up();
 
 builder.Configuration["DbConnectionString"] = sqliteConnectionString;
 
@@ -33,6 +34,10 @@ builder.Services.AddScoped<IMessagesRepository, MessagesRepository>();
 builder.Services.AddScoped<IChannelsRepository, ChannelsRepository>();
 builder.Services.AddScoped<IPrivateChannelsRepository, PrivateChannelsRepository>();
 builder.Services.AddScoped<IGroupsRepository, GroupsRepository>();
+
+builder.Services.AddDbContext<ChatDbContext>(
+    opt => opt.UseSqlite("chat.db")
+);
 
 var app = builder.Build();
 

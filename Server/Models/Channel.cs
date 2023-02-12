@@ -2,17 +2,25 @@ namespace Server.Models;
 
 public class Channel
 {
-    public Channel(
-        IMessagesRepository messages,
-        IChannelsRepository channels,
-        long id, int lastMessageId, DateTime lastMessageTs)
-    {
-        _messages = messages;
-        _channels = channels;
-        Id = id;
-        LastMessageId = lastMessageId;
-        LastMessageTs = lastMessageTs;
-    }
+    public long Id { get; set; }
+
+    public int LastMessageId { get; set; }
+
+    public DateTime LastMessageTs { get; set; }
+
+    public virtual IEnumerable<Message> Messages { get; set; }
+
+    // public Channel(
+    //     IMessagesRepository messages,
+    //     IChannelsRepository channels,
+    //     long id, int lastMessageId, DateTime lastMessageTs)
+    // {
+    //     _messages = messages;
+    //     _channels = channels;
+    //     Id = id;
+    //     LastMessageId = lastMessageId;
+    //     LastMessageTs = lastMessageTs;
+    // }
 
     public int SendMessage(long sender, string content)
     {
@@ -31,9 +39,4 @@ public class Channel
 
     private readonly IMessagesRepository _messages;
     private readonly IChannelsRepository _channels;
-    public long Id { get; }
-
-    public int LastMessageId { get; private set; }
-
-    public DateTime LastMessageTs { get; private set; }
 }

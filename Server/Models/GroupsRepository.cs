@@ -38,12 +38,13 @@ public class GroupsRepository : IGroupsRepository
         var groupId = (long)reader["Id"];
 
         return new Group(
-            _channels,
-            this,
-            groupId,
-            name,
-            description,
-            channel.Id);
+            // _channels,
+            // this,
+            // groupId,
+            // name,
+            // description,
+            // channel.Id
+            );
     }
 
     public Group? GetGroup(long groupId)
@@ -63,12 +64,13 @@ public class GroupsRepository : IGroupsRepository
         }
 
         return new Group(
-            _channels,
-            this,
-            groupId,
-            (string)reader["Name"],
-            (string)reader["Description"],
-            (long)reader["ChannelId"]);
+            // _channels,
+            // this,
+            // groupId,
+            // (string)reader["Name"],
+            // (string)reader["Description"],
+            // (long)reader["ChannelId"]
+            );
     }
 
     public void AddMember(long groupId, long userId)

@@ -55,7 +55,7 @@ public class MessagesRepository: IMessagesRepository
                 Content = (string)reader["Content"],
                 UserId = (long)reader["UserId"],
                 SentTs = reader.GetInt64(reader.GetOrdinal("SentTs")).FromUnixTime(),
-                Channel = channel
+                ChannelId = channel
             });
         }
 

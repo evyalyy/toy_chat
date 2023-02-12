@@ -34,7 +34,7 @@ public class GroupController : ControllerBase
             return NotFound($"Group {groupId} does not exist");
         }
 
-        var channel = group.GetChannel();
+        var channel = group.Channel;
         if (channel is null)
         {
             throw new Exception($"Group {groupId} does not have channel. That should not happen");
