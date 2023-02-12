@@ -8,9 +8,9 @@ public interface IGroupsRepository
 
     Group? GetGroup(GroupId groupId);
 
-    void AddMember(GroupId groupId, UserUuid userId);
+    void AddMember(GroupId groupId, long userId);
 
-    bool IsUserInGroup(GroupId groupId, UserUuid userId);
+    bool IsUserInGroup(GroupId groupId, long userId);
 
     List<GroupMemberInfo> GetMembers(GroupId groupId);
     // void RemoveMember(GroupId groupId, UserUuid userId);

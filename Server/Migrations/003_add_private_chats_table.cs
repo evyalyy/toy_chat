@@ -8,8 +8,8 @@ public class AddPrivateChannels: IMigration
     {
         return @"
         CREATE TABLE PrivateChannels (
-            UserId1 TEXT,
-            UserId2 TEXT,
+            UserId1 INTEGER,
+            UserId2 INTEGER,
             ChannelId TEXT,
             PRIMARY KEY (UserId1, UserId2),
             FOREIGN KEY (UserId1) REFERENCES Users(Id),

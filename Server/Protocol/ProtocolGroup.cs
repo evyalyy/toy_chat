@@ -6,5 +6,5 @@ public class GroupMemberInfo
 {
     public GroupId GroupId { get; set; }
 
-    public UserUuid UserId { get; set; }
+    public long UserId { get; set; }
 }

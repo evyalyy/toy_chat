@@ -75,7 +75,7 @@ public class GroupsRepository : IGroupsRepository
             new ChannelId((string)reader["ChannelId"]));
     }
 
-    public void AddMember(GroupId groupId, UserUuid userId)
+    public void AddMember(GroupId groupId, long userId)
     {
         if (IsUserInGroup(groupId, userId))
         {
@@ -89,7 +89,7 @@ public class GroupsRepository : IGroupsRepository
             VALUES (@groupId, @userId)";
         using var command = new SqliteCommand(query, conn);
         command.Parameters.Add(new SqliteParameter("groupId", groupId.ToString()));
-        command.Parameters.Add(new SqliteParameter("userId", userId.ToString()));
+        command.Parameters.Add(new SqliteParameter("userId", userId));
 
         var numRowsAffected = command.ExecuteNonQuery();
         if (numRowsAffected != 1)
@@ -98,7 +98,7 @@ public class GroupsRepository : IGroupsRepository
         }
     }
 
-    public bool IsUserInGroup(GroupId groupId, UserUuid userId)
+    public bool IsUserInGroup(GroupId groupId, long userId)
     {
         using var conn = new SqliteConnection(_connectionString);
         conn.Open();
@@ -108,7 +108,7 @@ public class GroupsRepository : IGroupsRepository
             WHERE GroupId = @groupId AND UserId = @userId";
         using var command = new SqliteCommand(query, conn);
         command.Parameters.Add(new SqliteParameter("groupId", groupId.ToString()));
-        command.Parameters.Add(new SqliteParameter("userId", userId.ToString()));
+        command.Parameters.Add(new SqliteParameter("userId", userId));
 
         var reader = command.ExecuteReader();
 
@@ -135,7 +135,7 @@ public class GroupsRepository : IGroupsRepository
             outMembersInfo.Add(new GroupMemberInfo
             {
                 GroupId = groupId,
-                UserId = new UserUuid((string)reader["UserId"])
+                UserId = (long)reader["UserId"]
             });
         }
 

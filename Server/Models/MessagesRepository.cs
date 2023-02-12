@@ -11,7 +11,7 @@ public class MessagesRepository: IMessagesRepository
     {
         _connectionString = configuration["DbConnectionString"];
     }
-    public int AddMessage(ChannelId channel, UserUuid senderId, string content, DateTime timestamp)
+    public int AddMessage(ChannelId channel, long senderId, string content, DateTime timestamp)
     {
         using var conn = new SqliteConnection(_connectionString);
         conn.Open();
@@ -20,7 +20,7 @@ public class MessagesRepository: IMessagesRepository
                     "VALUES (@content, @userId, @ts, @channel)" +
                     "RETURNING Id";
         using var command = new SqliteCommand(query, conn);
-        command.Parameters.Add(new SqliteParameter("userId", senderId.ToString()));
+        command.Parameters.Add(new SqliteParameter("userId", senderId));
         command.Parameters.Add(new SqliteParameter("content", content));
         command.Parameters.Add(new SqliteParameter("ts", timestamp.ToUnixTime()));
         command.Parameters.Add(new SqliteParameter("channel", channel.ToString()));
@@ -53,7 +53,7 @@ public class MessagesRepository: IMessagesRepository
             {
                 Id = reader.GetInt32(reader.GetOrdinal("Id")),
                 Content = (string)reader["Content"],
-                UserId = new UserUuid((string)reader["UserId"]),
+                UserId = (long)reader["UserId"],
                 SentTs = reader.GetInt64(reader.GetOrdinal("SentTs")).FromUnixTime(),
                 Channel = channel
             });

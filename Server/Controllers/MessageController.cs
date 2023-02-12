@@ -23,21 +23,18 @@ public class MessageController : ControllerBase
     }
 
     [HttpPost("Private")]
-    public ActionResult<SentMessageClient> PostPrivate(string senderUserId, string targetUserId, string content)
+    public ActionResult<SentMessageClient> PostPrivate(long senderUserId, long targetUserId, string content)
     {
-        var senderUuid = new UserUuid(senderUserId);
-        var targetUuid = new UserUuid(targetUserId);
-
-        var user = _users.GetUser(senderUuid);
+        var user = _users.GetUser(senderUserId);
         if (user is null)
         {
-            return NotFound($"User {senderUuid} not found");
+            return NotFound($"User {senderUserId} not found");
         }
         
-        var channel = _privateChannels.GetPrivateChannel(senderUuid, targetUuid)
-                      ?? _privateChannels.AddPrivateChannel(senderUuid, targetUuid);
+        var channel = _privateChannels.GetPrivateChannel(senderUserId, targetUserId)
+                      ?? _privateChannels.AddPrivateChannel(senderUserId, targetUserId);
 
-        var lastMessageId = channel.SendMessage(senderUuid, content);
+        var lastMessageId = channel.SendMessage(senderUserId, content);
 
         return new SentMessageClient{Id = channel.Id, LastMessageId = lastMessageId};
     }

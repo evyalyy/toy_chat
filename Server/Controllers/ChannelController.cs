@@ -16,9 +16,8 @@ public class ChannelController : ControllerBase
     }
 
     [HttpGet("MyPrivateChannels")]
-    public ActionResult<List<ChannelClient>> MyPrivateChannels(string userIdStr)
+    public ActionResult<List<ChannelClient>> MyPrivateChannels(long userId)
     {
-        var userId = new UserUuid(userIdStr);
         var channels = _channels.GetPrivateChannels(userId);
 
         return channels.Select(

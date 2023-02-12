@@ -14,7 +14,7 @@ public class Channel
         LastMessageTs = lastMessageTs;
     }
 
-    public int SendMessage(UserUuid sender, string content)
+    public int SendMessage(long sender, string content)
     {
         var now = DateTime.Now;
         var lastMessageId = _messages.AddMessage(Id, sender, content, now);

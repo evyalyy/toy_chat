@@ -17,7 +17,7 @@ public class AddGroups: IMigration
 
         CREATE TABLE GroupMembers (
             GroupId TEXT,
-            UserId TEXT,
+            UserId INTEGER,
             PRIMARY KEY (GroupId, UserId),
             FOREIGN KEY (GroupId) REFERENCES Groups(Id),
             FOREIGN KEY (UserId) REFERENCES Users(Id)

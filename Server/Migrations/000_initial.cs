@@ -8,7 +8,7 @@ public class Initial: IMigration
     {
         return @"
 CREATE TABLE Users (
-    Id TEXT PRIMARY KEY,
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
     PhoneNumber TEXT,
     Name TEXT,
     Password TEXT

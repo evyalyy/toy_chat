@@ -17,7 +17,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<UserUuid> Post(string phoneNumber, string password, string name)
+    public ActionResult<long> Post(string phoneNumber, string password, string name)
     {
         _logger.LogInformation("Received CreateUser with name {Name}", name);
 
@@ -25,9 +25,9 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<User> Get(string userId)
+    public ActionResult<User> Get(long userId)
     {
-        var user = _users.GetUser(new UserUuid(userId));
+        var user = _users.GetUser(userId);
         if (user is null)
         {
             return NotFound();

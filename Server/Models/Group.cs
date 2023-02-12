@@ -37,7 +37,7 @@ public class Group
         return _channels.GetChannel(_channelId);
     }
 
-    public void AddMember(UserUuid userId)
+    public void AddMember(long userId)
     {
         _groups.AddMember(Id, userId);
     }

@@ -4,7 +4,7 @@ namespace Server.Models;
 
 public class User
 {
-    public UserUuid Id { get; set; }
+    public long Id { get; set; }
 
     public string PhoneNumber { get; set; }
 

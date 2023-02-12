@@ -18,12 +18,12 @@ public class PrivateChannelsRepository : IPrivateChannelsRepository
         _channels = channels;
     }
 
-    private static (UserUuid, UserUuid) _sortUserIds(UserUuid userId1, UserUuid userId2)
+    private static (long, long) _sortUserIds(long userId1, long userId2)
     {
-        return userId1.Id.CompareTo(userId2.Id) > 0 ? (userId2, userId1) : (userId1, userId2);
+        return userId1 > userId2 ? (userId2, userId1) : (userId1, userId2);
     }
 
-    public Channel AddPrivateChannel(UserUuid userId1, UserUuid userId2)
+    public Channel AddPrivateChannel(long userId1, long userId2)
     {
         var newChannel = _channels.AddChannel();
 
@@ -36,8 +36,8 @@ public class PrivateChannelsRepository : IPrivateChannelsRepository
             INSERT INTO PrivateChannels (UserId1, UserId2, ChannelId)
             VALUES (@userId1, @userId2, @channelId)";
         using var command = new SqliteCommand(query, conn);
-        command.Parameters.Add(new SqliteParameter("userId1", userId1.ToString()));
-        command.Parameters.Add(new SqliteParameter("userId2", userId2.ToString()));
+        command.Parameters.Add(new SqliteParameter("userId1", userId1));
+        command.Parameters.Add(new SqliteParameter("userId2", userId2));
         command.Parameters.Add(new SqliteParameter("channelId", newChannel.Id.ToString()));
         var numRowsAffected = command.ExecuteNonQuery();
         if (numRowsAffected != 1)
@@ -48,7 +48,7 @@ public class PrivateChannelsRepository : IPrivateChannelsRepository
         return newChannel;
     }
 
-    public Channel? GetPrivateChannel(UserUuid userId1, UserUuid userId2)
+    public Channel? GetPrivateChannel(long userId1, long userId2)
     {
         (userId1, userId2) = _sortUserIds(userId1, userId2);
         using var conn = new SqliteConnection(_connectionString);
@@ -56,8 +56,8 @@ public class PrivateChannelsRepository : IPrivateChannelsRepository
 
         const string query = "SELECT ChannelId FROM PrivateChannels WHERE UserId1 = @id1 AND UserId2 = @id2";
         using var command = new SqliteCommand(query, conn);
-        command.Parameters.Add(new SqliteParameter("id1", userId1.ToString()));
-        command.Parameters.Add(new SqliteParameter("id2", userId2.ToString()));
+        command.Parameters.Add(new SqliteParameter("id1", userId1));
+        command.Parameters.Add(new SqliteParameter("id2", userId2));
         using var reader = command.ExecuteReader();
         if (!reader.Read())
         {
@@ -69,7 +69,7 @@ public class PrivateChannelsRepository : IPrivateChannelsRepository
         return _channels.GetChannel(channelId);
     }
 
-    public List<Channel> GetPrivateChannels(UserUuid userId)
+    public List<Channel> GetPrivateChannels(long userId)
     {
         var outChannels = new List<Channel>();
         using var conn = new SqliteConnection(_connectionString);
@@ -77,7 +77,7 @@ public class PrivateChannelsRepository : IPrivateChannelsRepository
 
         const string query = "SELECT ChannelId FROM PrivateChannels WHERE UserId1 = @id OR UserId2 = @id";
         using var command = new SqliteCommand(query, conn);
-        command.Parameters.Add(new SqliteParameter("id", userId.ToString()));
+        command.Parameters.Add(new SqliteParameter("id", userId));
         using var reader = command.ExecuteReader();
         while (reader.Read())
         {

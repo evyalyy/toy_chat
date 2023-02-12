@@ -20,15 +20,14 @@ public class GroupController : ControllerBase
     }
 
     [HttpPost("PostGroupMessage")]
-    public ActionResult<SentMessageClient> PostGroupMessage(string groupIdStr, string senderUserId, string content)
+    public ActionResult<SentMessageClient> PostGroupMessage(string groupIdStr, long senderUserId, string content)
     {
-        var senderUuid = new UserUuid(senderUserId);
         var groupId = new GroupId(groupIdStr);
 
-        var user = _users.GetUser(senderUuid);
+        var user = _users.GetUser(senderUserId);
         if (user is null)
         {
-            return NotFound($"User {senderUuid} not found");
+            return NotFound($"User {senderUserId} not found");
         }
 
         var group = _groups.GetGroup(groupId);
@@ -43,15 +42,14 @@ public class GroupController : ControllerBase
             throw new Exception($"Group {groupId} does not have channel. That should not happen");
         }
 
-        var lastMessageId = channel.SendMessage(senderUuid, content);
+        var lastMessageId = channel.SendMessage(senderUserId, content);
 
         return new SentMessageClient { Id = channel.Id, LastMessageId = lastMessageId };
     }
 
     [HttpPost("AddMember")]
-    public ActionResult AddMember(string groupIdStr, string userIdStr)
+    public ActionResult AddMember(string groupIdStr, long userId)
     {
-        var userId = new UserUuid(userIdStr);
         var groupId = new GroupId(groupIdStr);
 
         var user = _users.GetUser(userId);
@@ -71,10 +69,10 @@ public class GroupController : ControllerBase
     }
 
     [HttpPost("AddGroup")]
-    public ActionResult<Group> AddGroup(string owner, string name, string description)
+    public ActionResult<Group> AddGroup(long owner, string name, string description)
     {
         var group = _groups.AddGroup(name, description);
-        group.AddMember(new UserUuid(owner));
+        group.AddMember(owner);
         return group;
     }
 
