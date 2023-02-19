@@ -48,12 +48,8 @@ public class UsersRepository : IUsersRepository
         }
 
         var user = new User
-        {
-            Id = (long)reader["Id"],
-            PhoneNumber = (string)reader["PhoneNumber"],
-            Name = (string)reader["Name"],
-            Password = (string)reader["Password"]
-        };
+            ((string)reader["Name"], (string)reader["Password"], (string)reader["PhoneNumber"]);
+
         return user;
     }
 }

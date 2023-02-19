@@ -21,11 +21,11 @@ public class UserController : ControllerBase
     {
         _logger.LogInformation("Received CreateUser with name {Name}", name);
 
-        var user = new User { Name = name, PhoneNumber = phoneNumber, Password = password };
+        var user = new User(name, password, phoneNumber);
         var entry = _db.Users.Add(user);
-        
+
         _db.SaveChanges();
-        
+
         return entry.Entity.Id;
     }
 
@@ -37,6 +37,7 @@ public class UserController : ControllerBase
         {
             return NotFound($"User {userId} not found");
         }
+
         return user;
     }
 }
