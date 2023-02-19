@@ -1,64 +1,33 @@
 using Microsoft.Data.Sqlite;
+using Server.Data;
 using Server.Utils;
 
 namespace Server.Models;
 
 public class MessagesRepository: IMessagesRepository
 {
-    private readonly string _connectionString;
+    private ChatDbContext _db;
 
-    public MessagesRepository(IConfiguration configuration)
+    public MessagesRepository(ChatDbContext db)
     {
-        _connectionString = configuration["DbConnectionString"];
+        _db = db;
     }
-    public int AddMessage(long channel, long senderId, string content, DateTime timestamp)
+    public int AddMessage(long channelId, long senderId, string content, DateTime timestamp)
     {
-        using var conn = new SqliteConnection(_connectionString);
-        conn.Open();
-
-        var query = "INSERT INTO Messages (Content,UserId, SentTs, ChannelId)" +
-                    "VALUES (@content, @userId, @ts, @channel)" +
-                    "RETURNING Id";
-        using var command = new SqliteCommand(query, conn);
-        command.Parameters.Add(new SqliteParameter("userId", senderId));
-        command.Parameters.Add(new SqliteParameter("content", content));
-        command.Parameters.Add(new SqliteParameter("ts", timestamp.ToUnixTime()));
-        command.Parameters.Add(new SqliteParameter("channel", channel));
-        var output = command.ExecuteScalar();
-        if (output is not null)
+        var channel = _db.Channels.Find(channelId);
+        if (channel is null)
         {
-            return (int)(long)output;
+            throw new Exception($"Channel {channelId} does not exist");
         }
 
-        throw new Exception("Cannot insert message");
+        var data = new MessageData { ChannelId = channelId, Content = content, SentTs = timestamp, UserId = senderId };
+        var entry = _db.Messages.Add(data);
+        _db.SaveChanges();
+        return entry.Entity.Id;
     }
 
     public List<Message> GetMessages(long channel, int fromId)
     {
-        var messages = new List<Message>();
-        using var conn = new SqliteConnection(_connectionString);
-        conn.Open();
-
-        const string query = @"
-            SELECT Id, Content, UserId, SentTs, ChannelId
-            FROM Messages
-            WHERE ChannelId = @channel AND Id >= @id";
-        using var command = new SqliteCommand(query, conn);
-        command.Parameters.Add(new SqliteParameter("id", fromId));
-        command.Parameters.Add(new SqliteParameter("channel", channel));
-        using var reader = command.ExecuteReader();
-        while (reader.Read())
-        {
-            messages.Add(new Message
-            {
-                Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                Content = (string)reader["Content"],
-                UserId = (long)reader["UserId"],
-                SentTs = reader.GetInt64(reader.GetOrdinal("SentTs")).FromUnixTime(),
-                ChannelId = channel
-            });
-        }
-
-        return messages;
+        return new List<Message>();
     }
 }

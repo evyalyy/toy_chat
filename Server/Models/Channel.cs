@@ -1,3 +1,5 @@
+using Server.Data;
+
 namespace Server.Models;
 
 public class Channel
@@ -8,7 +10,7 @@ public class Channel
 
     public DateTime LastMessageTs { get; private set; }
 
-    public virtual IEnumerable<Message> Messages { get; private set; }
+    public virtual IEnumerable<MessageData> Messages { get; private set; }
 
     private ChatDbContext _db;
 

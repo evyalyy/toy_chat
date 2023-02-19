@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Server.Data;
 using Server.Models;
 using Server.Protocol;
 
@@ -30,7 +31,7 @@ public class PrivateChannelController : ControllerBase
             return NotFound($"Private channel {privateChannelId} not found");
         }
 
-        var message = new Message
+        var message = new MessageData
             { ChannelId = privateChannelId, Content = content, UserId = senderUserId, SentTs = DateTime.Now };
         var entry = _db.Messages.Add(message);
 
