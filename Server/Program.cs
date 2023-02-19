@@ -1,8 +1,7 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Server.Migrations;
 using Server.Models;
-using Server.Utils;
+using Server.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,15 +16,6 @@ var sqliteConnectionString = new SqliteConnectionStringBuilder
 {
     DataSource = "chat.db"
 }.ToString();
-//
-// var migrationRunner = new MigrationsRunner(sqliteConnectionString);
-// migrationRunner.Add(new Initial());
-// migrationRunner.Add(new AddSentTs());
-// migrationRunner.Add(new AddChannels());
-// migrationRunner.Add(new AddPrivateChannels());
-// migrationRunner.Add(new AddChannelIdToMessage());
-// migrationRunner.Add(new AddGroups());
-// migrationRunner.Up();
 
 builder.Configuration["DbConnectionString"] = sqliteConnectionString;
 

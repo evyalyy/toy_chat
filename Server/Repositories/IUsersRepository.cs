@@ -1,4 +1,6 @@
-namespace Server.Models;
+using Server.Models;
+
+namespace Server.Repositories;
 
 public interface IUsersRepository
 {

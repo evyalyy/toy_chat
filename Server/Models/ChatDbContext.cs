@@ -1,11 +1,12 @@
 using Microsoft.EntityFrameworkCore;
+using Server.Data;
 
 namespace Server.Models;
 
 
 public class ChatDbContext: DbContext
 {
-    public DbSet<User> Users { get; set; }
+    public DbSet<UserData> Users { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<Channel> Channels { get; set; }
     public DbSet<Group> Groups { get; set; }

@@ -1,40 +1,39 @@
+using Server.Data;
+using Server.Protocol;
+
 namespace Server.Models;
 
 public class User
 {
-    public long Id { get; private set; }
+    private readonly UserData _data;
 
-    public string PhoneNumber { get; private set; }
-
-    public string Name { get; private set; }
-
-    public string Password { get; private set; }
-
-    private User()
+    public User(UserData data)
     {
-        // just for EF
-    }
-
-    public User(string name, string password, string phoneNumber)
-    {
-        if (name.Length == 0)
+        if (data.Name.Length == 0)
         {
             throw new Exception("User name cannot be empty");
         }
 
-        if (password.Length == 0)
+        if (data.Password.Length == 0)
         {
             throw new Exception("Password cannot be empty");
         }
 
-        if (phoneNumber.Length == 0)
+        if (data.PhoneNumber.Length == 0)
         {
             throw new Exception("Phone number cannot be empty");
         }
 
-        Id = 0;
-        Name = name;
-        Password = password;
-        PhoneNumber = phoneNumber;
+        if (!data.PhoneNumber.StartsWith('+'))
+        {
+            throw new Exception("Phone number must start with +");
+        }
+
+        _data = data;
+    }
+
+    public UserClient GetForClient()
+    {
+        return new UserClient { Id = _data.Id, Name = _data.Name, PhoneNumber = _data.PhoneNumber };
     }
 }

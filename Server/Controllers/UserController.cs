@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Server.Models;
+using Server.Protocol;
+using Server.Repositories;
 
 namespace Server.Controllers;
 
@@ -8,12 +9,12 @@ namespace Server.Controllers;
 public class UserController : ControllerBase
 {
     private readonly ILogger<UserController> _logger;
-    private readonly ChatDbContext _db;
+    private readonly IUsersRepository _users;
 
-    public UserController(ILogger<UserController> logger, ChatDbContext db)
+    public UserController(ILogger<UserController> logger, IUsersRepository users)
     {
         _logger = logger;
-        _db = db;
+        _users = users;
     }
 
     [HttpPost]
@@ -21,23 +22,18 @@ public class UserController : ControllerBase
     {
         _logger.LogInformation("Received CreateUser with name {Name}", name);
 
-        var user = new User(name, password, phoneNumber);
-        var entry = _db.Users.Add(user);
-
-        _db.SaveChanges();
-
-        return entry.Entity.Id;
+        return _users.AddUser(phoneNumber, password, name);
     }
 
     [HttpGet]
-    public ActionResult<User> Get(long userId)
+    public ActionResult<UserClient> Get(long userId)
     {
-        var user = _db.Users.Find(userId);
+        var user = _users.GetUser(userId);
         if (user is null)
         {
             return NotFound($"User {userId} not found");
         }
 
-        return user;
+        return user.GetForClient();
     }
 }

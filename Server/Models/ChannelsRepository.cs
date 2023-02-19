@@ -76,13 +76,6 @@ public class ChannelsRepository : IChannelsRepository
             return null;
         }
 
-        return new Channel
-        (
-            // _messages,
-            // this,
-            // (long)reader["Id"],
-            // reader.GetInt32(reader.GetOrdinal("LastMessageId")),
-            // reader.GetInt64(reader.GetOrdinal("LastMessageTs")).FromUnixTime()
-        );
+        return null;
     }
 }

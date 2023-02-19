@@ -2,13 +2,31 @@ namespace Server.Models;
 
 public class Channel
 {
-    public long Id { get; set; }
+    public long Id { get; private set; }
 
-    public int LastMessageId { get; set; }
+    public int LastMessageId { get; private set; }
 
-    public DateTime LastMessageTs { get; set; }
+    public DateTime LastMessageTs { get; private set; }
 
-    public virtual IEnumerable<Message> Messages { get; set; }
+    public virtual IEnumerable<Message> Messages { get; private set; }
+
+    private ChatDbContext _db;
+
+    public Channel(ChatDbContext db)
+    {
+        _db = db;
+    }
+
+    public void UpdateLastMessageInfo(int lastMessageId, DateTime lastMessageTs)
+    {
+        if (lastMessageId == 0)
+        {
+            throw new Exception("last message id cannot be 0");
+        }
+
+        LastMessageId = lastMessageId;
+        LastMessageTs = lastMessageTs;
+    }
 
     // public Channel(
     //     IMessagesRepository messages,
