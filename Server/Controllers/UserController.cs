@@ -29,11 +29,6 @@ public class UserController : ControllerBase
     public ActionResult<UserClient> Get(long userId)
     {
         var user = _users.GetUser(userId);
-        if (user is null)
-        {
-            return NotFound($"User {userId} not found");
-        }
-
         return user.GetForClient();
     }
 }

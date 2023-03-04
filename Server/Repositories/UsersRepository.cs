@@ -21,9 +21,18 @@ public class UsersRepository : IUsersRepository
         return entry.Entity.Id;
     }
 
-    public Models.User? GetUser(long id)
+    public Models.User GetUser(long id)
     {
         var userData = _db.Users.Find(id);
-        return userData is null ? null : new Models.User(userData);
+        if (userData is null)
+        {
+            throw new Exception($"User {id} not found");
+        }
+        return new Models.User(userData);
+    }
+
+    public bool HasUser(long id)
+    {
+        return _db.Users.Find(id) is not null;
     }
 }

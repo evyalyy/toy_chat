@@ -27,11 +27,7 @@ public class MessageController : ControllerBase
     public ActionResult<SentMessageClient> PostPrivate(long senderUserId, long targetUserId, string content)
     {
         var user = _users.GetUser(senderUserId);
-        if (user is null)
-        {
-            return NotFound($"User {senderUserId} not found");
-        }
-
+        
         var channel = _privateChannels.GetPrivateChannel(senderUserId, targetUserId)
                       ?? _privateChannels.AddPrivateChannel(senderUserId, targetUserId);
 

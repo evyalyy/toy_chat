@@ -1,17 +1,20 @@
-using Server.Protocol;
+using Server.Data;
+using Group = Server.Models.Group;
 
-namespace Server.Models;
+namespace Server.Repositories;
 
 public interface IGroupsRepository
 {
     Group AddGroup(string name, string description);
 
-    Group? GetGroup(long groupId);
+    Group GetGroup(long groupId);
 
     void AddMember(long groupId, long userId);
 
     bool IsUserInGroup(long groupId, long userId);
 
-    List<GroupMemberInfo> GetMembers(long groupId);
+    IEnumerable<GroupMember> GetMembers(long groupId);
+
+    void SetGroupInfo(long groupId, string name, string description);
     // void RemoveMember(long groupId, UserUuid userId);
 }

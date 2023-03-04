@@ -1,47 +1,71 @@
-using Server.Protocol;
+using Server.Data;
+using Server.Repositories;
 
 namespace Server.Models;
 
 public class Group
 {
-    public long Id { get; set; }
-    
-    public string Name { get; set; }
-    
-    public string Description { get; set; }
-    
-    public long ChannelId { get; set; }
-    
+    private Data.Group _data;
+
     private readonly IGroupsRepository _groups;
+    private readonly IChannelsRepository _channels;
+    private readonly IUsersRepository _users;
 
-    // public Group(
-    //     IChannelsRepository channels,
-    //     IGroupsRepository groups,
-    //     long id,
-    //     string name,
-    //     string description,
-    //     long channelId)
-    // {
-    //     Id = id;
-    //     Name = name;
-    //     Description = description;
-    //     _channelId = channelId;
-    //     _channels = channels;
-    //     _groups = groups;
-    // }
+    public Group(Data.Group data, IGroupsRepository groups, IChannelsRepository channels, IUsersRepository users)
+    {
+        _data = data;
+        _groups = groups;
+        _channels = channels;
+        _users = users;
+    }
 
-    // public Channel? GetChannel()
-    // {
-    //     return _channels.GetChannel(_channelId);
-    // }
+    public long Id()
+    {
+        return _data.Id;
+    }
+
+    public SentMessage SendMessage(long userId, string content)
+    {
+        var channel = _channels.GetChannel(_data.ChannelId);
+        if (!_users.HasUser(userId))
+        {
+            throw new Exception($"User {userId} not found");
+        }
+
+        if (!HasMember(userId))
+        {
+            throw new Exception($"User {userId} not in group {_data.Id}");
+        }
+
+        return channel.SendMessage(userId, content);
+    }
 
     public void AddMember(long userId)
     {
-        _groups.AddMember(Id, userId);
+        if (!_users.HasUser(userId))
+        {
+            throw new Exception($"User {userId} not found");
+        }
+
+        if (!HasMember(userId))
+        {
+            _groups.AddMember(Id(), userId);
+        }
     }
 
-    public List<GroupMemberInfo> GetMembers()
+    public bool HasMember(long userId)
     {
-        return _groups.GetMembers(Id);
+        return _groups.IsUserInGroup(Id(), userId);
+    }
+
+    public IEnumerable<GroupMember> GetMembers()
+    {
+        return _groups.GetMembers(Id());
+    }
+
+    public void SetName(string name)
+    {
+        _groups.SetGroupInfo(Id(), name, _data.Description);
+        _data.Name = name;
     }
 }

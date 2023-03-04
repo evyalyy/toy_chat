@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Server.Models;
 using Server.Protocol;
 using Server.Repositories;
 
@@ -9,74 +8,50 @@ namespace Server.Controllers;
 [Route("[controller]")]
 public class GroupController : ControllerBase
 {
-    private readonly IUsersRepository _users;
     private readonly IGroupsRepository _groups;
 
-    public GroupController(
-        IUsersRepository users,
-        IGroupsRepository groups)
+    public GroupController(IGroupsRepository groups)
     {
-        _users = users;
         _groups = groups;
     }
 
     [HttpPost("PostGroupMessage")]
     public ActionResult<SentMessageClient> PostGroupMessage(long groupId, long senderUserId, string content)
     {
-        var user = _users.GetUser(senderUserId);
-        if (user is null)
-        {
-            return NotFound($"User {senderUserId} not found");
-        }
-
         var group = _groups.GetGroup(groupId);
-        if (group is null)
-        {
-            return NotFound($"Group {groupId} does not exist");
-        }
 
-        return new SentMessageClient();
-        // var channel = group.Channel;
-        // if (channel is null)
-        // {
-        //     throw new Exception($"Group {groupId} does not have channel. That should not happen");
-        // }
-        //
-        // var lastMessageInfo = channel.SendMessage(senderUserId, content);
-        //
-        // return lastMessageInfo.GetForClient();
+        var lastMessageInfo = group.SendMessage(senderUserId, content);
+
+        return lastMessageInfo.GetForClient();
     }
 
     [HttpPost("AddMember")]
-    public ActionResult AddMember(long groupId, long userId)
+    public void AddMember(long groupId, long userId)
     {
-        var user = _users.GetUser(userId);
-        if (user is null)
-        {
-            return NotFound($"User {userId} not found");
-        }
-
         var group = _groups.GetGroup(groupId);
-        if (group is null)
-        {
-            return NotFound($"Group {groupId} does not exist");
-        }
-
         group.AddMember(userId);
-        return Ok();
     }
 
     [HttpPost("AddGroup")]
-    public ActionResult<Group> AddGroup(long owner, string name, string description)
+    public ActionResult<long> AddGroup(long ownerId, string name, string description)
     {
         var group = _groups.AddGroup(name, description);
-        group.AddMember(owner);
-        return group;
+        group.AddMember(ownerId);
+        return group.Id();
+    }
+
+    [HttpPut("UpdateName")]
+    public void UpdateName(long groupId, string name)
+    {
+        var group = _groups.GetGroup(groupId);
+        group.SetName(name);
     }
 
     [HttpGet("GetMembers")]
     public ActionResult<List<GroupMemberInfo>> GetMembers(long groupId)
     {
-        return _groups.GetMembers(groupId);
+        var group = _groups.GetGroup(groupId);
+        return group.GetMembers()
+            .Select(member => new GroupMemberInfo { GroupId = member.GroupId, UserId = member.UserId }).ToList();
     }
 }

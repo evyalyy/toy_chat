@@ -1,11 +1,10 @@
-using Server.Data;
 using Server.Repositories;
 
 namespace Server.Models;
 
 public class Channel
 {
-    private Data.Channel _data;
+    private readonly Data.Channel _data;
     private readonly IMessagesRepository _messages;
     private readonly IChannelsRepository _channels;
 
@@ -41,15 +40,15 @@ public class Channel
         _channels.UpdateChannel(Id(), lastMessageId, lastMessageTs);
     }
 
-    public SentMessage SendMessage(long sender, string content)
+    public SentMessage SendMessage(long senderId, string content)
     {
         var now = DateTime.Now;
-        var lastMessageId = _messages.AddMessage(Id(), sender, content, now);
+        var lastMessageId = _messages.AddMessage(Id(), senderId, content, now);
         UpdateLastMessageInfo(lastMessageId, now);        
         return new SentMessage { ChannelId = Id(), MessageId = lastMessageId};
     }
 
-    public List<Message> GetMessages(int lastId = 0)
+    public IEnumerable<Message> GetMessages(int lastId = 0)
     {
         return _messages.GetMessages(Id(), lastId);
     }

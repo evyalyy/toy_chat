@@ -23,22 +23,18 @@ public class ChannelController : ControllerBase
     }
 
     [HttpPost("AddChannel")]
-    public ActionResult<long> AddChannel()
+    public ActionResult<long> DebugAddChannel()
     {
         var ch = _channels.AddChannel();
         return ch.Id();
     }
 
     [HttpPost("PostMessage")]
-    public ActionResult<SentMessageClient> PostMessage(long channelId, long sender, string content)
+    public ActionResult<SentMessageClient> DebugPostMessage(long channelId, long senderId, string content)
     {
         var channel = _channels.GetChannel(channelId);
-        if (channel is null)
-        {
-            return NotFound($"Channel {channelId} not found");
-        }
-
-        var sentMessage = channel.SendMessage(sender, content);
+        
+        var sentMessage = channel.SendMessage(senderId, content);
         return sentMessage.GetForClient();
     }
 }

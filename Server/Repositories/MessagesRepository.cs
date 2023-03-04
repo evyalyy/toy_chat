@@ -28,7 +28,7 @@ public class MessagesRepository : IMessagesRepository
         return entry.Entity.Id;
     }
 
-    public List<Models.Message> GetMessages(long channel, int fromId)
+    public IEnumerable<Models.Message> GetMessages(long channel, int fromId)
     {
         return _db.Messages
             .Where(message => message.ChannelId == channel && message.Id > fromId)

@@ -29,11 +29,17 @@ public class User
             throw new Exception("Phone number must start with +");
         }
     }
+
     public User(Data.User data)
     {
         ValidateData(data);
 
         _data = data;
+    }
+
+    public long Id()
+    {
+        return _data.Id;
     }
 
     public UserClient GetForClient()

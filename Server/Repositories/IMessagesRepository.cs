@@ -6,5 +6,5 @@ public interface IMessagesRepository
 {
     int AddMessage(long channel, long senderId, string content, DateTime timestamp);
 
-    List<Message> GetMessages(long channel, int fromId);
+    IEnumerable<Message> GetMessages(long channel, int fromId);
 }

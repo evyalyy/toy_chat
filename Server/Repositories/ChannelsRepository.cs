@@ -6,6 +6,7 @@ public class ChannelsRepository : IChannelsRepository
 {
     private readonly ChatDbContext _db;
     private readonly IMessagesRepository _messages;
+
     public ChannelsRepository(ChatDbContext db, IMessagesRepository messages)
     {
         _db = db;
@@ -34,9 +35,14 @@ public class ChannelsRepository : IChannelsRepository
         _db.SaveChanges();
     }
 
-    public Channel? GetChannel(long channelId)
+    public Channel GetChannel(long channelId)
     {
-       var data = _db.Channels.Find(channelId);
-       return data is null ? null : new Channel(data, _messages, this);
+        var data = _db.Channels.Find(channelId);
+        if (data is null)
+        {
+            throw new Exception($"Channel {channelId} not found");
+        }
+
+        return new Channel(data, _messages, this);
     }
 }

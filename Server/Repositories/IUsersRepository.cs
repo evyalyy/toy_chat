@@ -6,5 +6,7 @@ public interface IUsersRepository
 {
     long AddUser(string phoneNumber, string password, string name);
 
-    public User? GetUser(long id);
+    public User GetUser(long id);
+
+    public bool HasUser(long id);
 }
