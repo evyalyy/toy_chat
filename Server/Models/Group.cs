@@ -40,6 +40,12 @@ public class Group
         return channel.SendMessage(userId, content);
     }
 
+    public IEnumerable<Message> GetMessages(int fromId)
+    {
+        var channel = _channels.GetChannel(_data.ChannelId);
+        return channel.GetMessages(fromId);
+    }
+
     public void AddMember(long userId)
     {
         if (!_users.HasUser(userId))

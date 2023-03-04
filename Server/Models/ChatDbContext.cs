@@ -9,7 +9,7 @@ public class ChatDbContext : DbContext
     public DbSet<Data.Message> Messages { get; set; }
     public DbSet<Data.Channel> Channels { get; set; }
     public DbSet<Data.Group> Groups { get; set; }
-    public DbSet<Data.GroupMember> GroupMembers { get; set; }
+    public DbSet<GroupMember> GroupMembers { get; set; }
 
     // TODO: refactor
     public DbSet<PrivateChannel> PrivateChannels { get; set; }

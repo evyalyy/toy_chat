@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace Server.Data;
 
 public class GroupMember
