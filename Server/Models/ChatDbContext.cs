@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Server.Data;
 
 namespace Server.Models;
 
@@ -24,4 +25,13 @@ public class ChatDbContext : DbContext
     // // special "local" folder for your platform.
     protected override void OnConfiguring(DbContextOptionsBuilder options)
         => options.UseSqlite(_configuration.GetConnectionString("ChatDatabase"));
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<GroupMember>().HasKey(u => new 
+        { 
+            u.GroupId, 
+            u.UserId 
+        });
+    }
 }
