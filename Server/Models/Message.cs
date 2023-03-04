@@ -5,9 +5,9 @@ namespace Server.Models;
 
 public class Message
 {
-    private MessageData _data;
+    private readonly Data.Message _data;
 
-    public static void ValidateData(MessageData data)
+    public static void ValidateData(Data.Message data)
     {
         if (data.UserId == 0)
         {
@@ -15,7 +15,7 @@ public class Message
         }
     }
 
-    public Message(MessageData data)
+    public Message(Data.Message data)
     {
         ValidateData(data);
         _data = data;
@@ -25,7 +25,10 @@ public class Message
     {
         return new MessageClient
         {
-            Id = _data.Id, ChannelId = _data.ChannelId, Content = _data.Content, SentTs = _data.SentTs,
+            Id = _data.Id,
+            ChannelId = _data.ChannelId,
+            Content = _data.Content,
+            SentTs = _data.SentTs,
             UserId = _data.UserId
         };
     }

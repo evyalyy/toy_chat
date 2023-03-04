@@ -9,16 +9,9 @@ public class Group
     public string Name { get; set; }
     
     public string Description { get; set; }
-
-    // private readonly long _channelId;
     
     public long ChannelId { get; set; }
-    public Channel Channel { get; set; }
-
-    public IEnumerable<GroupMember> Members { get; set; }
-
-    private readonly IChannelsRepository _channels;
-
+    
     private readonly IGroupsRepository _groups;
 
     // public Group(

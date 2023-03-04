@@ -5,59 +5,52 @@ namespace Server.Models;
 
 public class Channel
 {
-    public long Id { get; private set; }
+    private Data.Channel _data;
+    private readonly IMessagesRepository _messages;
+    private readonly IChannelsRepository _channels;
 
-    public int LastMessageId { get; private set; }
-
-    public DateTime LastMessageTs { get; private set; }
-
-    public virtual IEnumerable<MessageData> Messages { get; private set; }
-
-    private ChatDbContext _db;
-
-    public Channel(ChatDbContext db)
+    public long Id()
     {
-        _db = db;
+        return _data.Id;
     }
 
-    public void UpdateLastMessageInfo(int lastMessageId, DateTime lastMessageTs)
+    private static void ValidateData(Data.Channel data)
+    {
+        if (data.Id == 0)
+        {
+            throw new Exception("Channel id cannot be 0");
+        }
+    }
+    public Channel(Data.Channel data, IMessagesRepository messages, IChannelsRepository channels)
+    {
+        ValidateData(data);
+        _data = data;
+        _messages = messages;
+        _channels = channels;
+    }
+
+    private void UpdateLastMessageInfo(int lastMessageId, DateTime lastMessageTs)
     {
         if (lastMessageId == 0)
         {
             throw new Exception("last message id cannot be 0");
         }
 
-        LastMessageId = lastMessageId;
-        LastMessageTs = lastMessageTs;
+        _data.LastMessageId = lastMessageId;
+        _data.LastMessageTs = lastMessageTs;
+        _channels.UpdateChannel(Id(), lastMessageId, lastMessageTs);
     }
 
-    // public Channel(
-    //     IMessagesRepository messages,
-    //     IChannelsRepository channels,
-    //     long id, int lastMessageId, DateTime lastMessageTs)
-    // {
-    //     _messages = messages;
-    //     _channels = channels;
-    //     Id = id;
-    //     LastMessageId = lastMessageId;
-    //     LastMessageTs = lastMessageTs;
-    // }
-
-    public int SendMessage(long sender, string content)
+    public SentMessage SendMessage(long sender, string content)
     {
         var now = DateTime.Now;
-        var lastMessageId = _messages.AddMessage(Id, sender, content, now);
-        _channels.UpdateChannel(Id, lastMessageId, now);
-        LastMessageId = lastMessageId;
-        LastMessageTs = now;
-        return lastMessageId;
+        var lastMessageId = _messages.AddMessage(Id(), sender, content, now);
+        UpdateLastMessageInfo(lastMessageId, now);        
+        return new SentMessage { ChannelId = Id(), MessageId = lastMessageId};
     }
 
     public List<Message> GetMessages(int lastId = 0)
     {
-        return _messages.GetMessages(Id, lastId);
+        return _messages.GetMessages(Id(), lastId);
     }
-
-    private readonly IMessagesRepository _messages;
-    private readonly IChannelsRepository _channels;
 }

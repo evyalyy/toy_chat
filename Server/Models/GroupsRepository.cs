@@ -1,5 +1,6 @@
 using Microsoft.Data.Sqlite;
 using Server.Protocol;
+using Server.Repositories;
 
 namespace Server.Models;
 
@@ -28,7 +29,7 @@ public class GroupsRepository : IGroupsRepository
         using var command = new SqliteCommand(query, conn);
         command.Parameters.Add(new SqliteParameter("name", name));
         command.Parameters.Add(new SqliteParameter("description", description));
-        command.Parameters.Add(new SqliteParameter("channelId", channel.Id.ToString()));
+        command.Parameters.Add(new SqliteParameter("channelId", channel.Id()));
         var reader = command.ExecuteReader();
         if (!reader.Read())
         {

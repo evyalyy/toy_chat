@@ -1,6 +1,6 @@
 namespace Server.Data;
 
-public class UserData
+public class User
 {
     public long Id { get; set; }
 

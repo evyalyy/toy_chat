@@ -31,23 +31,25 @@ public class MessageController : ControllerBase
         {
             return NotFound($"User {senderUserId} not found");
         }
-        
+
         var channel = _privateChannels.GetPrivateChannel(senderUserId, targetUserId)
                       ?? _privateChannels.AddPrivateChannel(senderUserId, targetUserId);
 
-        var lastMessageId = channel.SendMessage(senderUserId, content);
+        var lastMessageInfo = channel.SendMessage(senderUserId, content);
 
-        return new SentMessageClient{Id = channel.Id, LastMessageId = lastMessageId};
+        return lastMessageInfo.GetForClient();
     }
 
     [HttpGet]
-    public ActionResult<List<Message>> Get(long channelId, int lastMessageId = 0)
+    public ActionResult<List<MessageClient>> Get(long channelId, int lastMessageId = 0)
     {
         var channel = _channels.GetChannel(channelId);
         if (channel is null)
         {
             return NotFound($"Channel {channelId} not found");
         }
-        return channel.GetMessages(lastMessageId);
+
+        var messages = channel.GetMessages(lastMessageId);
+        return messages.Select(message => message.GetForClient()).ToList();
     }
 }

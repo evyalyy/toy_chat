@@ -5,9 +5,9 @@ namespace Server.Models;
 
 public class User
 {
-    private readonly UserData _data;
+    private readonly Data.User _data;
 
-    public static void ValidateData(UserData data)
+    public static void ValidateData(Data.User data)
     {
         if (data.Name.Length == 0)
         {
@@ -29,7 +29,7 @@ public class User
             throw new Exception("Phone number must start with +");
         }
     }
-    public User(UserData data)
+    public User(Data.User data)
     {
         ValidateData(data);
 

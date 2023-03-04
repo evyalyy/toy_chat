@@ -35,15 +35,16 @@ public class GroupController : ControllerBase
             return NotFound($"Group {groupId} does not exist");
         }
 
-        var channel = group.Channel;
-        if (channel is null)
-        {
-            throw new Exception($"Group {groupId} does not have channel. That should not happen");
-        }
-
-        var lastMessageId = channel.SendMessage(senderUserId, content);
-
-        return new SentMessageClient { Id = channel.Id, LastMessageId = lastMessageId };
+        return new SentMessageClient();
+        // var channel = group.Channel;
+        // if (channel is null)
+        // {
+        //     throw new Exception($"Group {groupId} does not have channel. That should not happen");
+        // }
+        //
+        // var lastMessageInfo = channel.SendMessage(senderUserId, content);
+        //
+        // return lastMessageInfo.GetForClient();
     }
 
     [HttpPost("AddMember")]
