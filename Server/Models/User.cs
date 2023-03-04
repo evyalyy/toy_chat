@@ -7,7 +7,7 @@ public class User
 {
     private readonly UserData _data;
 
-    public User(UserData data)
+    public static void ValidateData(UserData data)
     {
         if (data.Name.Length == 0)
         {
@@ -28,6 +28,10 @@ public class User
         {
             throw new Exception("Phone number must start with +");
         }
+    }
+    public User(UserData data)
+    {
+        ValidateData(data);
 
         _data = data;
     }

@@ -15,8 +15,7 @@ public class UsersRepository : IUsersRepository
     public long AddUser(string phoneNumber, string password, string name)
     {
         var data = new UserData { Name = name, Password = password, PhoneNumber = phoneNumber };
-        // for validation purpose only
-        var user = new User(data);
+        User.ValidateData(data);
         var entry = _db.Users.Add(data);
         _db.SaveChanges();
         return entry.Entity.Id;

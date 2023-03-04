@@ -39,7 +39,7 @@ public class PrivateChannelController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<List<Message>> GetMessages(long privateChannelId, int lastMessageId = 0)
+    public ActionResult<List<MessageClient>> GetMessages(long privateChannelId, int lastMessageId = 0)
     {
         var channel = _db.Channels.Find(privateChannelId);
         if (channel is null)
@@ -47,8 +47,6 @@ public class PrivateChannelController : ControllerBase
             return NotFound($"Channel {privateChannelId} not found");
         }
 
-        return channel.Messages.Where(
-            row => row.Id > lastMessageId
-        ).ToList();
+        return new List<MessageClient>();
     }
 }

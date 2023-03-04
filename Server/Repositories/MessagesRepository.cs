@@ -1,8 +1,7 @@
-using Microsoft.Data.Sqlite;
 using Server.Data;
-using Server.Utils;
+using Server.Models;
 
-namespace Server.Models;
+namespace Server.Repositories;
 
 public class MessagesRepository: IMessagesRepository
 {
@@ -21,6 +20,7 @@ public class MessagesRepository: IMessagesRepository
         }
 
         var data = new MessageData { ChannelId = channelId, Content = content, SentTs = timestamp, UserId = senderId };
+        Message.ValidateData(data);
         var entry = _db.Messages.Add(data);
         _db.SaveChanges();
         return entry.Entity.Id;
