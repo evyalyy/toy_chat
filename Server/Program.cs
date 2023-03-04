@@ -1,7 +1,5 @@
-using Microsoft.Data.Sqlite;
-using Server.Migrations;
-using Server.Models;
-using Server.Utils;
+using Microsoft.EntityFrameworkCore;
+using Server.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,27 +10,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var sqliteConnectionString = new SqliteConnectionStringBuilder
-{
-    DataSource = "chat.db"
-}.ToString();
-
-var migrationRunner = new MigrationsRunner(sqliteConnectionString);
-migrationRunner.Add(new Initial());
-migrationRunner.Add(new AddSentTs());
-migrationRunner.Add(new AddChannels());
-migrationRunner.Add(new AddPrivateChannels());
-migrationRunner.Add(new AddChannelIdToMessage());
-migrationRunner.Add(new AddGroups());
-migrationRunner.Up();
-
-builder.Configuration["DbConnectionString"] = sqliteConnectionString;
-
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IMessagesRepository, MessagesRepository>();
 builder.Services.AddScoped<IChannelsRepository, ChannelsRepository>();
 builder.Services.AddScoped<IPrivateChannelsRepository, PrivateChannelsRepository>();
 builder.Services.AddScoped<IGroupsRepository, GroupsRepository>();
+
+builder.Services.AddDbContext<ChatDbContext>(
+    opt => opt.UseSqlite("chat.db")
+);
 
 var app = builder.Build();
 

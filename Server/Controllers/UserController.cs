@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Server.Models;
+using Server.Protocol;
+using Server.Repositories;
 
 namespace Server.Controllers;
 
@@ -16,23 +17,18 @@ public class UserController : ControllerBase
         _users = users;
     }
 
-    [HttpPost]
-    public ActionResult<UserUuid> Post(string phoneNumber, string password, string name)
+    [HttpPost("RegisterUser")]
+    public ActionResult<long> RegisterUser(string phoneNumber, string password, string name)
     {
         _logger.LogInformation("Received CreateUser with name {Name}", name);
 
         return _users.AddUser(phoneNumber, password, name);
     }
 
-    [HttpGet]
-    public ActionResult<User> Get(string userId)
+    [HttpGet("GetUser")]
+    public ActionResult<UserClient> GetUser(long userId)
     {
-        var user = _users.GetUser(new UserUuid(userId));
-        if (user is null)
-        {
-            return NotFound();
-        }
-
-        return user;
+        var user = _users.GetUser(userId);
+        return user.GetForClient();
     }
 }

@@ -1,14 +1,49 @@
-using System.ComponentModel.DataAnnotations.Schema;
+using Server.Data;
+using Server.Protocol;
 
 namespace Server.Models;
 
 public class User
 {
-    public UserUuid Id { get; set; }
+    private readonly Data.User _data;
 
-    public string PhoneNumber { get; set; }
+    public static void ValidateData(Data.User data)
+    {
+        if (data.Name.Length == 0)
+        {
+            throw new Exception("User name cannot be empty");
+        }
 
-    public string Name { get; set; }
+        if (data.Password.Length == 0)
+        {
+            throw new Exception("Password cannot be empty");
+        }
 
-    public string Password { get; set; }
+        if (data.PhoneNumber.Length == 0)
+        {
+            throw new Exception("Phone number cannot be empty");
+        }
+
+        if (!data.PhoneNumber.StartsWith('+'))
+        {
+            throw new Exception("Phone number must start with +");
+        }
+    }
+
+    public User(Data.User data)
+    {
+        ValidateData(data);
+
+        _data = data;
+    }
+
+    public long Id()
+    {
+        return _data.Id;
+    }
+
+    public UserClient GetForClient()
+    {
+        return new UserClient { Id = _data.Id, Name = _data.Name, PhoneNumber = _data.PhoneNumber };
+    }
 }

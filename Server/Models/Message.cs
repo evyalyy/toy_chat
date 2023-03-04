@@ -1,14 +1,34 @@
+using Server.Protocol;
+
 namespace Server.Models;
 
 public class Message
 {
-    public int Id { get; set; }
-    
-    public ChannelId Channel { get; set; }
+    private readonly Data.Message _data;
 
-    public string Content { get; set; }
+    public static void ValidateData(Data.Message data)
+    {
+        if (data.UserId == 0)
+        {
+            throw new Exception("UserId cannot be empty");
+        }
+    }
 
-    public UserUuid UserId { get; set; }
+    public Message(Data.Message data)
+    {
+        ValidateData(data);
+        _data = data;
+    }
 
-    public DateTime SentTs { get; set; }
+    public MessageClient GetForClient()
+    {
+        return new MessageClient
+        {
+            Id = _data.Id,
+            ChannelId = _data.ChannelId,
+            Content = _data.Content,
+            SentTs = _data.SentTs,
+            UserId = _data.UserId
+        };
+    }
 }
