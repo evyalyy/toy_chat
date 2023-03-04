@@ -20,6 +20,7 @@ public class Channel
             throw new Exception("Channel id cannot be 0");
         }
     }
+
     public Channel(Data.Channel data, IMessagesRepository messages, IChannelsRepository channels)
     {
         ValidateData(data);
@@ -35,17 +36,17 @@ public class Channel
             throw new Exception("last message id cannot be 0");
         }
 
+        _channels.UpdateChannel(Id(), lastMessageId, lastMessageTs);
         _data.LastMessageId = lastMessageId;
         _data.LastMessageTs = lastMessageTs;
-        _channels.UpdateChannel(Id(), lastMessageId, lastMessageTs);
     }
 
     public SentMessage SendMessage(long senderId, string content)
     {
         var now = DateTime.Now;
         var lastMessageId = _messages.AddMessage(Id(), senderId, content, now);
-        UpdateLastMessageInfo(lastMessageId, now);        
-        return new SentMessage { ChannelId = Id(), MessageId = lastMessageId};
+        UpdateLastMessageInfo(lastMessageId, now);
+        return new SentMessage { ChannelId = Id(), MessageId = lastMessageId };
     }
 
     public IEnumerable<Message> GetMessages(int lastId = 0)
