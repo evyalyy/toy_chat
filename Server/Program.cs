@@ -1,6 +1,4 @@
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Server.Models;
 using Server.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,13 +9,6 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-var sqliteConnectionString = new SqliteConnectionStringBuilder
-{
-    DataSource = "chat.db"
-}.ToString();
-
-builder.Configuration["DbConnectionString"] = sqliteConnectionString;
 
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IMessagesRepository, MessagesRepository>();
