@@ -17,16 +17,16 @@ public class UserController : ControllerBase
         _users = users;
     }
 
-    [HttpPost]
-    public ActionResult<long> Post(string phoneNumber, string password, string name)
+    [HttpPost("RegisterUser")]
+    public ActionResult<long> RegisterUser(string phoneNumber, string password, string name)
     {
         _logger.LogInformation("Received CreateUser with name {Name}", name);
 
         return _users.AddUser(phoneNumber, password, name);
     }
 
-    [HttpGet]
-    public ActionResult<UserClient> Get(long userId)
+    [HttpGet("GetUser")]
+    public ActionResult<UserClient> GetUser(long userId)
     {
         var user = _users.GetUser(userId);
         return user.GetForClient();

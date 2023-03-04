@@ -1,19 +1,29 @@
+using Server.Repositories;
+
 namespace Server.Models;
 
 public class PrivateChannel
 {
-    public long Id { get; set; }
+    private readonly Data.PrivateChannel _data;
+    private readonly IChannelsRepository _channels;
+    private readonly IUsersRepository _users;
 
-    public DateTime CreatedAt { get; set; }
-
-    public long ChannelId { get; set; }
-
-    public long UserId1 { get; set; }
-
-    public long UserId2 { get; set; }
-
-    public static (long, long) SortIds(long userId1, long userId2)
+    public PrivateChannel(Data.PrivateChannel data, IChannelsRepository channels, IUsersRepository users)
     {
-        return userId1 < userId2 ? (userId1, userId2) : (userId2, userId1);
+        _data = data;
+        _channels = channels;
+        _users = users;
+    }
+
+    public SentMessage SendMessage(long userId, string content)
+    {
+        var channel = _channels.GetChannel(_data.ChannelId);
+        return channel.SendMessage(userId, content);
+    }
+
+    public IEnumerable<Message> GetMessages(int fromId)
+    {
+        var channel = _channels.GetChannel(_data.ChannelId);
+        return channel.GetMessages(fromId);
     }
 }

@@ -5,7 +5,7 @@ namespace Server.Models;
 
 public class Group
 {
-    private Data.Group _data;
+    private readonly Data.Group _data;
 
     private readonly IGroupsRepository _groups;
     private readonly IChannelsRepository _channels;

@@ -1,4 +1,3 @@
-using Server.Data;
 using Server.Protocol;
 
 namespace Server.Models;
