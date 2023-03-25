@@ -36,7 +36,7 @@ public class PrivateChannelsRepository : IPrivateChannelsRepository
         };
         var added = _db.PrivateChannels.Add(data);
         _db.SaveChanges();
-        return new PrivateChannel(added.Entity, _channels, _users);
+        return new PrivateChannel(added.Entity, _channels);
     }
 
     public PrivateChannel GetPrivateChannel(UserIdPair userIds)
@@ -47,13 +47,13 @@ public class PrivateChannelsRepository : IPrivateChannelsRepository
             throw new Exception($"Private channel for user {userIds.UserId1()} and {userIds.UserId2()}");
         }
 
-        return new PrivateChannel(data, _channels, _users);
+        return new PrivateChannel(data, _channels);
     }
 
     public PrivateChannel GetPrivateChannel(long channelId)
     {
-        var data = _db.PrivateChannels.Where(ch => ch.ChannelId == channelId).Take(1).ToList();
-        return new PrivateChannel(data[0], _channels, _users);
+        var data = _db.PrivateChannels.First(ch => ch.ChannelId == channelId);
+        return new PrivateChannel(data, _channels);
     }
 
     public bool HasPrivateChannel(UserIdPair userIds)
@@ -64,6 +64,6 @@ public class PrivateChannelsRepository : IPrivateChannelsRepository
     public List<PrivateChannel> GetPrivateChannels(long userId)
     {
         return _db.PrivateChannels.Where(ch => ch.UserId1 == userId || ch.UserId2 == userId)
-            .Select(ch => new PrivateChannel(ch, _channels, _users)).ToList();
+            .Select(ch => new PrivateChannel(ch, _channels)).ToList();
     }
 }
