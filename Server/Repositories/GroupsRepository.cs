@@ -1,5 +1,4 @@
 using Server.Data;
-using Server.Models;
 using Group = Server.Models.Group;
 
 namespace Server.Repositories;
@@ -19,7 +18,7 @@ public class GroupsRepository : IGroupsRepository
 
     public Group AddGroup(string name, string description)
     {
-        var channel = _channels.AddChannel();
+        var channel = _channels.AddChannel(ChannelType.GROUP);
         var groupData = new Data.Group { ChannelId = channel.Id(), Description = description, Name = name };
         var entry = _db.Groups.Add(groupData);
         _db.SaveChanges();
@@ -59,35 +58,10 @@ public class GroupsRepository : IGroupsRepository
         return _db.GroupMembers.Where(member => member.GroupId == groupId).ToList();
     }
 
-    public IEnumerable<GroupPreviewInfo> GetPreviews(long userId, int numberOfPreviews)
+    public Group FindGroupByChannel(long channelId)
     {
-        var groupsInfo = _db.GroupMembers
-            .Where(member => member.UserId == userId)
-            .Join(
-                _db.Groups,
-                member => member.GroupId,
-                group => group.Id,
-                (member, group) => new
-                {
-                    GroupId = group.Id,
-                    ChannelId = group.ChannelId,
-                    GroupName = group.Name
-                })
-            .Take(numberOfPreviews);
-
-        var outPreviews = new List<GroupPreviewInfo>();
-        foreach(var groupInfo in groupsInfo)
-        {
-            var ch = _channels.GetChannel(groupInfo.ChannelId);
-            var lastMessage = ch.GetLastMessage().GetForClient();
-            outPreviews.Add(new GroupPreviewInfo
-            {
-                GroupId = groupInfo.GroupId,
-                GroupName = groupInfo.GroupName,
-                LastMessage = lastMessage
-            });
-        }
-        return outPreviews;
+        var data = _db.Groups.First(gr => gr.ChannelId == channelId);
+        return new Group(data, this, _channels, _users);
     }
 
     public void SetGroupInfo(long groupId, string name, string description)

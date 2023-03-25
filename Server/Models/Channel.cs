@@ -2,6 +2,8 @@ using Server.Repositories;
 
 namespace Server.Models;
 
+using ChannelType = Data.ChannelType;
+
 public class Channel
 {
     private readonly Data.Channel _data;
@@ -11,6 +13,11 @@ public class Channel
     public long Id()
     {
         return _data.Id;
+    }
+
+    public ChannelType Type()
+    {
+        return _data.Type;
     }
 
     private static void ValidateData(Data.Channel data)
@@ -31,6 +38,11 @@ public class Channel
 
     public SentMessage SendMessage(long senderId, string content)
     {
+        if (!_channels.HasMember(Id(), senderId))
+        {
+            throw new Exception($"User {senderId} is not a member of channel {Id()}");
+        }
+
         var now = DateTime.Now;
         var lastMessageId = _messages.AddMessage(Id(), senderId, content, now);
         _channels.UpdateChannel(Id(), lastMessageId, now);

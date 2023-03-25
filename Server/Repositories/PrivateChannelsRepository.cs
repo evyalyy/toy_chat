@@ -1,4 +1,6 @@
+using Server.Data;
 using Server.Models;
+using PrivateChannel = Server.Models.PrivateChannel;
 
 namespace Server.Repositories;
 
@@ -26,7 +28,7 @@ public class PrivateChannelsRepository : IPrivateChannelsRepository
             throw new Exception($"User {userIds.UserId2()} not found");
         }
 
-        var channel = _channels.AddChannel();
+        var channel = _channels.AddChannel(ChannelType.PRIVATE);
         var data = new Data.PrivateChannel
         {
             ChannelId = channel.Id(),
@@ -36,6 +38,10 @@ public class PrivateChannelsRepository : IPrivateChannelsRepository
         };
         var added = _db.PrivateChannels.Add(data);
         _db.SaveChanges();
+        
+        _channels.AddMember(channel.Id(), userIds.UserId1());
+        _channels.AddMember(channel.Id(), userIds.UserId2());
+
         return new PrivateChannel(added.Entity, _channels);
     }
 

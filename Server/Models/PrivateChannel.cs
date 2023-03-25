@@ -13,6 +13,21 @@ public class PrivateChannel
         _channels = channels;
     }
 
+    public long GetCounterPart(long userId)
+    {
+        if (userId == _data.UserId1)
+        {
+            return _data.UserId2;
+        }
+
+        if (userId == _data.UserId2)
+        {
+            return _data.UserId1;
+        }
+
+        throw new Exception($"User {userId} not in private channel {_data.ChannelId}");
+    }
+
     public SentMessage SendMessage(long userId, string content)
     {
         var channel = _channels.GetChannel(_data.ChannelId);

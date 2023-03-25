@@ -43,6 +43,11 @@ public class User
         return _data.Id;
     }
 
+    public string Name()
+    {
+        return _data.Name;
+    }
+
     public UserClient GetForClient()
     {
         return new UserClient { Id = _data.Id, Name = _data.Name, PhoneNumber = _data.PhoneNumber };

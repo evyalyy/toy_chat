@@ -63,10 +63,4 @@ public class GroupController : ControllerBase
         var messages = group.GetMessages(lastMessageId);
         return messages.Select(m => m.GetForClient()).ToList();
     }
-    
-    [HttpGet("GetGroupPreviews")]
-    public ActionResult<List<GroupPreviewInfo>> GetGroupPreviews(long userId)
-    {
-        return _groups.GetPreviews(userId, 5).ToList();
-    }
 }

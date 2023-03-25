@@ -1,5 +1,4 @@
 using Server.Data;
-using Server.Models;
 using Group = Server.Models.Group;
 
 namespace Server.Repositories;
@@ -16,7 +15,7 @@ public interface IGroupsRepository
 
     IEnumerable<GroupMember> GetMembers(long groupId);
 
-    IEnumerable<GroupPreviewInfo> GetPreviews(long userId, int numberOfPreviews);
+    Group FindGroupByChannel(long channelId);
 
     void SetGroupInfo(long groupId, string name, string description);
 }

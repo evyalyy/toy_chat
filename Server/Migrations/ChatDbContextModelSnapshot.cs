@@ -28,9 +28,33 @@ namespace Server.Migrations
                     b.Property<DateTime>("LastMessageTs")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.ToTable("Channels");
+                });
+
+            modelBuilder.Entity("Server.Data.ChannelMember", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("ChannelId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChannelId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ChannelMembers");
                 });
 
             modelBuilder.Entity("Server.Data.Group", b =>
@@ -145,6 +169,25 @@ namespace Server.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Server.Data.ChannelMember", b =>
+                {
+                    b.HasOne("Server.Data.Channel", "Channel")
+                        .WithMany("ChannelMembers")
+                        .HasForeignKey("ChannelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Server.Data.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Channel");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Server.Data.Group", b =>
                 {
                     b.HasOne("Server.Data.Channel", "Channel")
@@ -192,6 +235,11 @@ namespace Server.Migrations
                     b.Navigation("Channel");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Server.Data.Channel", b =>
+                {
+                    b.Navigation("ChannelMembers");
                 });
 #pragma warning restore 612, 618
         }
