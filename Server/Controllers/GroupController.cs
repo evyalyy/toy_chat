@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Server.Models;
 using Server.Protocol;
 using Server.Repositories;
 
@@ -61,5 +62,11 @@ public class GroupController : ControllerBase
         var group = _groups.GetGroup(groupId);
         var messages = group.GetMessages(lastMessageId);
         return messages.Select(m => m.GetForClient()).ToList();
+    }
+    
+    [HttpGet("GetGroupPreviews")]
+    public ActionResult<List<GroupPreviewInfo>> GetGroupPreviews(long userId)
+    {
+        return _groups.GetPreviews(userId, 5).ToList();
     }
 }

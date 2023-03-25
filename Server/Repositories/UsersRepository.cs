@@ -1,4 +1,3 @@
-using Server.Models;
 using User = Server.Data.User;
 
 namespace Server.Repositories;

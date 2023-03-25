@@ -72,6 +72,5 @@ public class Group
     public void SetName(string name)
     {
         _groups.SetGroupInfo(Id(), name, _data.Description);
-        _data.Name = name;
     }
 }

@@ -1,4 +1,3 @@
-using Server.Models;
 using Message = Server.Data.Message;
 
 namespace Server.Repositories;
@@ -33,5 +32,12 @@ public class MessagesRepository : IMessagesRepository
         return _db.Messages
             .Where(message => message.ChannelId == channel && message.Id > fromId)
             .Select(message => new Models.Message(message)).ToList();
+    }
+
+    public Models.Message GetMessage(long channel, int messageId)
+    {
+        var data = _db.Messages
+            .First(m => m.ChannelId == channel && m.Id == messageId);
+        return new Models.Message(data);
     }
 }

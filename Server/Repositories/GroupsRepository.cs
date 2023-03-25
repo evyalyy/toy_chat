@@ -59,6 +59,37 @@ public class GroupsRepository : IGroupsRepository
         return _db.GroupMembers.Where(member => member.GroupId == groupId).ToList();
     }
 
+    public IEnumerable<GroupPreviewInfo> GetPreviews(long userId, int numberOfPreviews)
+    {
+        var groupsInfo = _db.GroupMembers
+            .Where(member => member.UserId == userId)
+            .Join(
+                _db.Groups,
+                member => member.GroupId,
+                group => group.Id,
+                (member, group) => new
+                {
+                    GroupId = group.Id,
+                    ChannelId = group.ChannelId,
+                    GroupName = group.Name
+                })
+            .Take(numberOfPreviews);
+
+        var outPreviews = new List<GroupPreviewInfo>();
+        foreach(var groupInfo in groupsInfo)
+        {
+            var ch = _channels.GetChannel(groupInfo.ChannelId);
+            var lastMessage = ch.GetLastMessage().GetForClient();
+            outPreviews.Add(new GroupPreviewInfo
+            {
+                GroupId = groupInfo.GroupId,
+                GroupName = groupInfo.GroupName,
+                LastMessage = lastMessage
+            });
+        }
+        return outPreviews;
+    }
+
     public void SetGroupInfo(long groupId, string name, string description)
     {
         var data = _db.Groups.Find(groupId);
@@ -70,9 +101,7 @@ public class GroupsRepository : IGroupsRepository
         data.Name = name;
         data.Description = description;
         _db.Groups.Update(data);
-        
+
         _db.SaveChanges();
     }
-
-    // public void RemoveMember(GroupId groupId, UserUuid userId);
 }

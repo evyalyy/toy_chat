@@ -29,28 +29,21 @@ public class Channel
         _channels = channels;
     }
 
-    private void UpdateLastMessageInfo(int lastMessageId, DateTime lastMessageTs)
-    {
-        if (lastMessageId == 0)
-        {
-            throw new Exception("last message id cannot be 0");
-        }
-
-        _channels.UpdateChannel(Id(), lastMessageId, lastMessageTs);
-        _data.LastMessageId = lastMessageId;
-        _data.LastMessageTs = lastMessageTs;
-    }
-
     public SentMessage SendMessage(long senderId, string content)
     {
         var now = DateTime.Now;
         var lastMessageId = _messages.AddMessage(Id(), senderId, content, now);
-        UpdateLastMessageInfo(lastMessageId, now);
+        _channels.UpdateChannel(Id(), lastMessageId, now);
         return new SentMessage { ChannelId = Id(), MessageId = lastMessageId };
     }
 
     public IEnumerable<Message> GetMessages(int lastId = 0)
     {
         return _messages.GetMessages(Id(), lastId);
+    }
+
+    public Message GetLastMessage()
+    {
+        return _messages.GetMessage(Id(), _data.LastMessageId);
     }
 }
