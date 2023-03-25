@@ -1,5 +1,6 @@
 using Server.Data;
 using Server.Protocol;
+using Server.Repositories;
 
 namespace Server.Models;
 
@@ -40,6 +41,11 @@ public class User
     public long Id()
     {
         return _data.Id;
+    }
+
+    public string Name()
+    {
+        return _data.Name;
     }
 
     public UserClient GetForClient()

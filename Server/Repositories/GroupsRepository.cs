@@ -1,5 +1,4 @@
 using Server.Data;
-using Server.Models;
 using Group = Server.Models.Group;
 
 namespace Server.Repositories;
@@ -19,7 +18,7 @@ public class GroupsRepository : IGroupsRepository
 
     public Group AddGroup(string name, string description)
     {
-        var channel = _channels.AddChannel();
+        var channel = _channels.AddChannel(ChannelType.GROUP);
         var groupData = new Data.Group { ChannelId = channel.Id(), Description = description, Name = name };
         var entry = _db.Groups.Add(groupData);
         _db.SaveChanges();
@@ -59,6 +58,12 @@ public class GroupsRepository : IGroupsRepository
         return _db.GroupMembers.Where(member => member.GroupId == groupId).ToList();
     }
 
+    public Group FindGroupByChannel(long channelId)
+    {
+        var data = _db.Groups.First(gr => gr.ChannelId == channelId);
+        return new Group(data, this, _channels, _users);
+    }
+
     public void SetGroupInfo(long groupId, string name, string description)
     {
         var data = _db.Groups.Find(groupId);
@@ -70,9 +75,7 @@ public class GroupsRepository : IGroupsRepository
         data.Name = name;
         data.Description = description;
         _db.Groups.Update(data);
-        
+
         _db.SaveChanges();
     }
-
-    // public void RemoveMember(GroupId groupId, UserUuid userId);
 }

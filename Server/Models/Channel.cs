@@ -2,6 +2,8 @@ using Server.Repositories;
 
 namespace Server.Models;
 
+using ChannelType = Data.ChannelType;
+
 public class Channel
 {
     private readonly Data.Channel _data;
@@ -11,6 +13,11 @@ public class Channel
     public long Id()
     {
         return _data.Id;
+    }
+
+    public ChannelType Type()
+    {
+        return _data.Type;
     }
 
     private static void ValidateData(Data.Channel data)
@@ -29,28 +36,26 @@ public class Channel
         _channels = channels;
     }
 
-    private void UpdateLastMessageInfo(int lastMessageId, DateTime lastMessageTs)
-    {
-        if (lastMessageId == 0)
-        {
-            throw new Exception("last message id cannot be 0");
-        }
-
-        _channels.UpdateChannel(Id(), lastMessageId, lastMessageTs);
-        _data.LastMessageId = lastMessageId;
-        _data.LastMessageTs = lastMessageTs;
-    }
-
     public SentMessage SendMessage(long senderId, string content)
     {
+        if (!_channels.HasMember(Id(), senderId))
+        {
+            throw new Exception($"User {senderId} is not a member of channel {Id()}");
+        }
+
         var now = DateTime.Now;
         var lastMessageId = _messages.AddMessage(Id(), senderId, content, now);
-        UpdateLastMessageInfo(lastMessageId, now);
+        _channels.UpdateChannel(Id(), lastMessageId, now);
         return new SentMessage { ChannelId = Id(), MessageId = lastMessageId };
     }
 
     public IEnumerable<Message> GetMessages(int lastId = 0)
     {
         return _messages.GetMessages(Id(), lastId);
+    }
+
+    public Message GetLastMessage()
+    {
+        return _messages.GetMessage(Id(), _data.LastMessageId);
     }
 }

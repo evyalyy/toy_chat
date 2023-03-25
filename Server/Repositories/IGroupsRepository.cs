@@ -15,6 +15,7 @@ public interface IGroupsRepository
 
     IEnumerable<GroupMember> GetMembers(long groupId);
 
+    Group FindGroupByChannel(long channelId);
+
     void SetGroupInfo(long groupId, string name, string description);
-    // void RemoveMember(long groupId, UserUuid userId);
 }

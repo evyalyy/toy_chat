@@ -6,13 +6,26 @@ public class PrivateChannel
 {
     private readonly Data.PrivateChannel _data;
     private readonly IChannelsRepository _channels;
-    private readonly IUsersRepository _users;
 
-    public PrivateChannel(Data.PrivateChannel data, IChannelsRepository channels, IUsersRepository users)
+    public PrivateChannel(Data.PrivateChannel data, IChannelsRepository channels)
     {
         _data = data;
         _channels = channels;
-        _users = users;
+    }
+
+    public long GetCounterPart(long userId)
+    {
+        if (userId == _data.UserId1)
+        {
+            return _data.UserId2;
+        }
+
+        if (userId == _data.UserId2)
+        {
+            return _data.UserId1;
+        }
+
+        throw new Exception($"User {userId} not in private channel {_data.ChannelId}");
     }
 
     public SentMessage SendMessage(long userId, string content)

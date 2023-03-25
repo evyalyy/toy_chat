@@ -24,6 +24,11 @@ public class Group
         return _data.Id;
     }
 
+    public string Name()
+    {
+        return _data.Name;
+    }
+
     public SentMessage SendMessage(long userId, string content)
     {
         var channel = _channels.GetChannel(_data.ChannelId);
@@ -56,6 +61,7 @@ public class Group
         if (!HasMember(userId))
         {
             _groups.AddMember(Id(), userId);
+            _channels.AddMember(_data.ChannelId, userId);
         }
     }
 
@@ -72,6 +78,5 @@ public class Group
     public void SetName(string name)
     {
         _groups.SetGroupInfo(Id(), name, _data.Description);
-        _data.Name = name;
     }
 }
